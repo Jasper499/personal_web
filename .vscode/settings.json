@@ -1,6 +1,7 @@
 {
   "remote.autoForwardPorts": true,
   "remote.autoForwardPortsSource": "hybrid",
+  "remote.forwardOnOpen": true,
   "remote.portsAttributes": {
     "3000": {
       "label": "匠心小铺 API",
