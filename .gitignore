@@ -6,3 +6,5 @@ backend/uploads/*
 !backend/uploads/.gitkeep
 .DS_Store
 dist/
+.api-server.pid
+.api-server.log

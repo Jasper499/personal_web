@@ -19,6 +19,7 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/admin', express.static(path.join(__dirname, '../../admin')));
 
+app.get('/', (_req, res) => res.redirect('/admin/'));
 app.get('/health', (_req, res) => res.json({ status: 'ok' }));
 
 app.use('/api/auth', authRoutes);
