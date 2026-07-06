@@ -1,0 +1,36 @@
+<view class="page" wx:if="{{order}}">
+  <view class="card status-card">
+    <text class="status">{{statusMap[order.status]}}</text>
+    <text wx:if="{{order.pickupCode}}" class="pickup-code">取货码：{{order.pickupCode}}</text>
+  </view>
+
+  <view class="card" wx:if="{{order.deliveryType === 'express' && order.addressSnapshot}}">
+    <text>{{order.addressSnapshot.name}} {{order.addressSnapshot.phone}}</text>
+    <text class="addr">{{order.addressSnapshot.province}}{{order.addressSnapshot.city}}{{order.addressSnapshot.district}}{{order.addressSnapshot.detail}}</text>
+  </view>
+
+  <view class="card" wx:if="{{order.deliveryType === 'pickup'}}">
+    <text>到店自提 · 匠心小铺默认门店</text>
+  </view>
+
+  <view class="card">
+    <view class="item" wx:for="{{order.items}}" wx:key="id">
+      <image class="thumb" src="{{item.coverImage}}" mode="aspectFill" />
+      <view class="info">
+        <text>{{item.productName}}</text>
+        <text class="spec" wx:if="{{item.specName}}">{{item.specName}}</text>
+        <view class="row">
+          <text class="price">￥{{item.price}}</text>
+          <text>x{{item.quantity}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+
+  <view class="card">
+    <view class="row"><text>商品金额</text><text>￥{{order.totalAmount}}</text></view>
+    <view class="row"><text>运费</text><text>￥{{order.freight}}</text></view>
+    <view class="row total"><text>实付金额</text><text class="price">￥{{order.payAmount}}</text></view>
+    <view class="row"><text>订单编号</text><text>{{order.orderNo}}</text></view>
+  </view>
+</view>

@@ -1,0 +1,58 @@
+.delivery-opt {
+  display: block;
+  padding: 16rpx 0;
+}
+
+.address .addr-detail {
+  display: block;
+  color: #6C757D;
+  margin-top: 8rpx;
+}
+
+.placeholder {
+  color: #ADB5BD;
+}
+
+.pickup .label {
+  font-weight: 600;
+  display: block;
+}
+
+.pickup .tip {
+  font-size: 24rpx;
+  color: #ADB5BD;
+  display: block;
+  margin-top: 8rpx;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12rpx 0;
+}
+
+.remark input {
+  text-align: right;
+  flex: 1;
+  margin-left: 24rpx;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16rpx 24rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  background: #fff;
+}
+
+.submit-btn {
+  width: 280rpx;
+  height: 72rpx;
+  line-height: 72rpx;
+  font-size: 28rpx;
+}

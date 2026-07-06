@@ -1,0 +1,57 @@
+<view class="page" wx:if="{{product}}">
+  <swiper class="gallery" indicator-dots>
+    <swiper-item wx:for="{{product.images}}" wx:key="*this">
+      <image class="gallery-img" src="{{item}}" mode="aspectFill" />
+    </swiper-item>
+  </swiper>
+
+  <view class="card">
+    <view>
+      <text class="price">￥{{selectedSku ? selectedSku.price : product.price}}</text>
+      <text class="price-original" wx:if="{{product.originalPrice}}">￥{{product.originalPrice}}</text>
+    </view>
+    <view class="title">{{product.name}}</view>
+    <view class="meta">已售 {{product.salesCount}} · 库存 {{selectedSku ? selectedSku.stock : product.stock}}</view>
+  </view>
+
+  <view class="card" wx:if="{{product.skus && product.skus.length}}" bindtap="onAddCart">
+    <text>规格</text>
+    <text class="sku-selected">{{selectedSku.specName || '请选择'}} ></text>
+  </view>
+
+  <view class="card detail">
+    <view class="section-title">商品详情</view>
+    <text>{{product.description}}</text>
+  </view>
+
+  <view class="bottom-bar">
+    <view class="bar-btn" bindtap="onAddCart">加入购物车</view>
+    <view class="bar-btn primary" bindtap="onBuyNow">立即购买</view>
+  </view>
+</view>
+
+<view class="sku-mask" wx:if="{{showSku}}" bindtap="onCloseSku">
+  <view class="sku-panel" catchtap="">
+    <view class="sku-title">选择规格</view>
+    <view class="sku-list">
+      <view
+        class="sku-tag {{selectedSku.id === item.id ? 'active' : ''}}"
+        wx:for="{{product.skus}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="onSkuTap"
+      >
+        {{item.specName}} ￥{{item.price}}
+      </view>
+    </view>
+    <view class="qty-row">
+      <text>数量</text>
+      <view class="qty-ctrl">
+        <text data-type="minus" bindtap="onQtyChange">-</text>
+        <text>{{quantity}}</text>
+        <text data-type="plus" bindtap="onQtyChange">+</text>
+      </view>
+    </view>
+    <view class="btn-primary" bindtap="onConfirmSku">确定</view>
+  </view>
+</view>

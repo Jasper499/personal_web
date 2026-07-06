@@ -1,0 +1,31 @@
+<view class="page">
+  <scroll-view class="sidebar" scroll-y>
+    <view
+      class="cat-item {{activeId === item.id ? 'active' : ''}}"
+      wx:for="{{categories}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="onCategoryTap"
+    >
+      {{item.name}}
+    </view>
+  </scroll-view>
+  <scroll-view class="main" scroll-y bindscrolltolower="onReachBottom">
+    <view
+      class="product-row"
+      wx:for="{{products}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="onProductTap"
+    >
+      <image class="thumb" src="{{item.coverImage}}" mode="aspectFill" />
+      <view class="info">
+        <text class="name">{{item.name}}</text>
+        <view>
+          <text class="price">￥{{item.price}}</text>
+          <text class="sales">已售{{item.salesCount}}</text>
+        </view>
+      </view>
+    </view>
+  </scroll-view>
+</view>

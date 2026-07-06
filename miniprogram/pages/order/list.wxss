@@ -1,0 +1,68 @@
+.tabs {
+  white-space: nowrap;
+  background: #fff;
+  padding: 16rpx 0;
+}
+
+.tab {
+  display: inline-block;
+  padding: 12rpx 32rpx;
+  font-size: 28rpx;
+  color: #6C757D;
+}
+
+.tab.active {
+  color: #E85D4C;
+  font-weight: 600;
+  border-bottom: 4rpx solid #E85D4C;
+}
+
+.order-card {
+  background: #fff;
+  margin: 24rpx;
+  border-radius: 16rpx;
+  padding: 24rpx;
+}
+
+.order-head {
+  display: flex;
+  justify-content: space-between;
+  font-size: 24rpx;
+  color: #6C757D;
+}
+
+.status {
+  color: #E85D4C;
+}
+
+.order-items {
+  display: flex;
+  margin: 16rpx 0;
+}
+
+.item-img {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 8rpx;
+  margin-right: 8rpx;
+}
+
+.order-foot {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.action {
+  display: inline-block;
+  padding: 8rpx 24rpx;
+  border: 2rpx solid #E9ECEF;
+  border-radius: 32rpx;
+  margin-left: 16rpx;
+  font-size: 24rpx;
+}
+
+.action.primary {
+  border-color: #E85D4C;
+  color: #E85D4C;
+}

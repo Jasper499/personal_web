@@ -1,0 +1,38 @@
+<view class="card">
+  <radio-group bindchange="onDeliveryChange">
+    <label class="delivery-opt">
+      <radio value="pickup" checked="{{deliveryType === 'pickup'}}" color="#E85D4C" /> 到店自提
+    </label>
+    <label class="delivery-opt">
+      <radio value="express" checked="{{deliveryType === 'express'}}" color="#E85D4C" /> 快递配送
+    </label>
+  </radio-group>
+</view>
+
+<view class="card address" wx:if="{{deliveryType === 'express'}}" bindtap="onAddressTap">
+  <block wx:if="{{selectedAddress}}">
+    <text>{{selectedAddress.name}} {{selectedAddress.phone}}</text>
+    <text class="addr-detail">{{selectedAddress.province}}{{selectedAddress.city}}{{selectedAddress.district}}{{selectedAddress.detail}}</text>
+  </block>
+  <text wx:else class="placeholder">请选择收货地址 ></text>
+</view>
+
+<view class="card pickup" wx:else>
+  <text class="label">自提门店</text>
+  <text>匠心小铺 · 默认门店</text>
+  <text class="tip">下单后凭取货码到店自提</text>
+</view>
+
+<view class="card">
+  <view class="row"><text>商品金额</text><text>￥{{totalAmount}}</text></view>
+  <view class="row"><text>运费</text><text>￥{{freight}}</text></view>
+  <view class="row remark">
+    <text>备注</text>
+    <input placeholder="选填" value="{{remark}}" bindinput="onRemarkInput" />
+  </view>
+</view>
+
+<view class="footer">
+  <text>实付：<text class="price">￥{{payAmount}}</text></text>
+  <view class="btn-primary submit-btn" bindtap="onSubmit">提交订单</view>
+</view>

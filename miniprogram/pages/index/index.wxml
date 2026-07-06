@@ -1,0 +1,44 @@
+<view class="search-bar" bindtap="onSearchTap">
+  <text class="search-placeholder">🔍 搜索商品</text>
+</view>
+
+<swiper class="banner" indicator-dots autoplay circular>
+  <swiper-item wx:for="{{banners}}" wx:key="id">
+    <image class="banner-img" src="{{item.imageUrl}}" mode="aspectFill" />
+  </swiper-item>
+</swiper>
+
+<view class="category-grid">
+  <view
+    class="category-item"
+    wx:for="{{categories}}"
+    wx:key="id"
+    data-id="{{item.id}}"
+    bindtap="onCategoryTap"
+  >
+    <text class="category-icon">{{item.icon || '📦'}}</text>
+    <text class="category-name">{{item.name}}</text>
+  </view>
+</view>
+
+<view class="section">
+  <view class="section-title">热销推荐</view>
+  <view class="product-grid">
+    <view
+      class="product-card"
+      wx:for="{{products}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="onProductTap"
+    >
+      <image class="product-img" src="{{item.coverImage}}" mode="aspectFill" />
+      <view class="product-info">
+        <text class="product-name">{{item.name}}</text>
+        <view>
+          <text class="price">￥{{item.price}}</text>
+          <text class="sales">已售{{item.salesCount}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

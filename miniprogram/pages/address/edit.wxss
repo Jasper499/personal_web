@@ -1,0 +1,19 @@
+.field {
+  display: flex;
+  align-items: center;
+  padding: 24rpx 0;
+  border-bottom: 1rpx solid #E9ECEF;
+}
+
+.field text {
+  width: 160rpx;
+  flex-shrink: 0;
+}
+
+.field input {
+  flex: 1;
+}
+
+.save-btn {
+  margin: 48rpx 24rpx;
+}

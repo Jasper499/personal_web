@@ -1,0 +1,58 @@
+.status-card {
+  text-align: center;
+}
+
+.status {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #E85D4C;
+  display: block;
+}
+
+.pickup-code {
+  font-size: 48rpx;
+  font-weight: 600;
+  margin-top: 16rpx;
+  display: block;
+}
+
+.addr {
+  display: block;
+  color: #6C757D;
+  margin-top: 8rpx;
+}
+
+.item {
+  display: flex;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #E9ECEF;
+}
+
+.thumb {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 8rpx;
+}
+
+.info {
+  flex: 1;
+  margin-left: 16rpx;
+}
+
+.spec {
+  font-size: 24rpx;
+  color: #ADB5BD;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8rpx 0;
+}
+
+.total {
+  font-weight: 600;
+  border-top: 1rpx solid #E9ECEF;
+  margin-top: 8rpx;
+  padding-top: 16rpx;
+}

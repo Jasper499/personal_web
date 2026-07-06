@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>匠心小铺 - 商家管理后台</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; }
+    .login-wrap { max-width: 400px; margin: 120px auto; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,.08); }
+    h1 { color: #E85D4C; margin-bottom: 24px; font-size: 24px; }
+    input { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #ddd; border-radius: 8px; }
+    button { width: 100%; padding: 12px; background: #E85D4C; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+    .layout { display: flex; min-height: 100vh; }
+    .sidebar { width: 220px; background: #2D3436; color: #fff; padding: 24px 0; }
+    .sidebar h2 { padding: 0 24px 24px; font-size: 18px; color: #E85D4C; }
+    .sidebar a { display: block; padding: 12px 24px; color: #ccc; text-decoration: none; cursor: pointer; }
+    .sidebar a.active, .sidebar a:hover { background: #3d4446; color: #fff; }
+    .main { flex: 1; padding: 24px; }
+    .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+    .stat-card { background: #fff; padding: 24px; border-radius: 12px; }
+    .stat-card .num { font-size: 32px; font-weight: 600; color: #E85D4C; }
+    table { width: 100%; background: #fff; border-radius: 12px; border-collapse: collapse; overflow: hidden; }
+    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #eee; }
+    th { background: #fafafa; }
+    .tag { padding: 4px 8px; border-radius: 4px; font-size: 12px; background: #ffe8e5; color: #E85D4C; }
+    .btn-sm { padding: 6px 12px; font-size: 12px; border: 1px solid #E85D4C; color: #E85D4C; background: #fff; border-radius: 6px; cursor: pointer; margin-right: 8px; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <div class="login-wrap" v-if="!token">
+      <h1>匠心小铺管理后台</h1>
+      <input v-model="username" placeholder="用户名" />
+      <input v-model="password" type="password" placeholder="密码" />
+      <button @click="login">登录</button>
+      <p style="margin-top:16px;color:#999;font-size:14px;">默认账号：admin / admin123</p>
+    </div>
+
+    <div class="layout" v-else>
+      <nav class="sidebar">
+        <h2>匠心小铺</h2>
+        <a :class="{active: tab==='dashboard'}" @click="tab='dashboard';load()">仪表盘</a>
+        <a :class="{active: tab==='products'}" @click="tab='products';loadProducts()">商品管理</a>
+        <a :class="{active: tab==='orders'}" @click="tab='orders';loadOrders()">订单管理</a>
+        <a @click="logout" style="margin-top:40px;">退出登录</a>
+      </nav>
+      <main class="main">
+        <div v-if="tab==='dashboard'">
+          <h2 style="margin-bottom:24px;">经营概览</h2>
+          <div class="stats">
+            <div class="stat-card"><div>今日订单</div><div class="num">{{ stats.todayOrders }}</div></div>
+            <div class="stat-card"><div>待付款</div><div class="num">{{ stats.pending }}</div></div>
+            <div class="stat-card"><div>待发货</div><div class="num">{{ stats.paid }}</div></div>
+          </div>
+        </div>
+
+        <div v-if="tab==='products'">
+          <h2 style="margin-bottom:24px;">商品列表</h2>
+          <table>
+            <thead><tr><th>ID</th><th>名称</th><th>价格</th><th>库存</th><th>状态</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr v-for="p in products" :key="p.id">
+                <td>{{ p.id }}</td>
+                <td>{{ p.name }}</td>
+                <td>￥{{ p.price }}</td>
+                <td>{{ p.stock }}</td>
+                <td><span class="tag">{{ p.isActive ? '上架' : '下架' }}</span></td>
+                <td>
+                  <button class="btn-sm" @click="toggleProduct(p)">{{ p.isActive ? '下架' : '上架' }}</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div v-if="tab==='orders'">
+          <h2 style="margin-bottom:24px;">订单列表</h2>
+          <table>
+            <thead><tr><th>订单号</th><th>用户</th><th>金额</th><th>配送</th><th>状态</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr v-for="o in orders" :key="o.id">
+                <td>{{ o.orderNo }}</td>
+                <td>{{ o.user?.nickname }}</td>
+                <td>￥{{ o.payAmount }}</td>
+                <td>{{ o.deliveryType === 'pickup' ? '自提' : '快递' }}</td>
+                <td><span class="tag">{{ statusText(o.status) }}</span></td>
+                <td>
+                  <button class="btn-sm" v-if="o.status==='paid' && o.deliveryType==='pickup'" @click="completePickup(o)">核销自提</button>
+                  <button class="btn-sm" v-if="o.status==='paid' && o.deliveryType==='express'" @click="shipOrder(o)">发货</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/vue@3/dist/vue.global.prod.js"></script>
+  <script>
+    const API = '/api';
+    const { createApp } = Vue;
+
+    createApp({
+      data() {
+        return {
+          token: localStorage.getItem('admin_token') || '',
+          username: 'admin',
+          password: '',
+          tab: 'dashboard',
+          stats: { todayOrders: 0, pending: 0, paid: 0 },
+          products: [],
+          orders: [],
+        };
+      },
+      mounted() {
+        if (this.token) this.load();
+      },
+      methods: {
+        async api(path, options = {}) {
+          const res = await fetch(API + path, {
+            ...options,
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: 'Bearer ' + this.token,
+              ...options.headers,
+            },
+            body: options.body ? JSON.stringify(options.body) : undefined,
+          });
+          const json = await res.json();
+          if (json.code !== 0) throw new Error(json.message);
+          return json.data;
+        },
+        async login() {
+          const res = await fetch(API + '/auth/admin-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: this.username, password: this.password }),
+          });
+          const json = await res.json();
+          if (json.code !== 0) return alert(json.message);
+          this.token = json.data.token;
+          localStorage.setItem('admin_token', this.token);
+          this.load();
+        },
+        logout() {
+          this.token = '';
+          localStorage.removeItem('admin_token');
+        },
+        async load() {
+          this.stats = await this.api('/admin/orders/stats/overview');
+        },
+        async loadProducts() {
+          const data = await this.api('/admin/products');
+          this.products = data.list;
+        },
+        async loadOrders() {
+          this.orders = await this.api('/admin/orders');
+        },
+        statusText(s) {
+          return { pending: '待付款', paid: '待发货', shipped: '待收货', completed: '已完成', cancelled: '已取消' }[s] || s;
+        },
+        async toggleProduct(p) {
+          await this.api('/admin/products/' + p.id + '/status', { method: 'PATCH', body: { isActive: !p.isActive } });
+          this.loadProducts();
+        },
+        async completePickup(o) {
+          await this.api('/admin/orders/' + o.id + '/complete-pickup', { method: 'POST' });
+          this.loadOrders();
+        },
+        async shipOrder(o) {
+          const expressNo = prompt('请输入快递单号');
+          if (!expressNo) return;
+          await this.api('/admin/orders/' + o.id + '/ship', {
+            method: 'POST',
+            body: { expressCompany: '顺丰速运', expressNo },
+          });
+          this.loadOrders();
+        },
+      },
+    }).mount('#app');
+  </script>
+</body>
+</html>

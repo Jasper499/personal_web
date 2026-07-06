@@ -1,0 +1,40 @@
+.addr-card {
+  background: #fff;
+  margin: 24rpx;
+  padding: 24rpx;
+  border-radius: 16rpx;
+}
+
+.head {
+  display: flex;
+  align-items: center;
+}
+
+.default {
+  background: #E85D4C;
+  color: #fff;
+  font-size: 20rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+  margin-left: 16rpx;
+}
+
+.detail {
+  color: #6C757D;
+  margin: 12rpx 0;
+  display: block;
+}
+
+.actions {
+  text-align: right;
+  color: #6C757D;
+  font-size: 24rpx;
+}
+
+.actions text {
+  margin-left: 24rpx;
+}
+
+.add-btn {
+  margin: 48rpx 24rpx;
+}

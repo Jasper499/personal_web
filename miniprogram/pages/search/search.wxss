@@ -1,0 +1,56 @@
+.search-bar {
+  display: flex;
+  padding: 24rpx;
+  background: #fff;
+}
+
+.search-bar input {
+  flex: 1;
+  background: #F8F9FA;
+  border-radius: 32rpx;
+  padding: 16rpx 24rpx;
+}
+
+.search-btn {
+  color: #E85D4C;
+  padding: 16rpx 24rpx;
+}
+
+.section {
+  padding: 24rpx;
+}
+
+.section-head {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16rpx;
+}
+
+.clear {
+  color: #ADB5BD;
+  font-size: 24rpx;
+}
+
+.tag {
+  display: inline-block;
+  background: #fff;
+  padding: 12rpx 24rpx;
+  border-radius: 32rpx;
+  margin: 8rpx;
+  font-size: 24rpx;
+}
+
+.product-row {
+  display: flex;
+  background: #fff;
+  padding: 24rpx;
+  margin: 16rpx 24rpx;
+  border-radius: 16rpx;
+}
+
+.thumb {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 8rpx;
+  margin-right: 16rpx;
+}

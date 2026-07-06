@@ -1,0 +1,32 @@
+<view class="header card">
+  <image class="avatar" src="{{userInfo.avatar || '/assets/icons/profile.png'}}" />
+  <view>
+    <text class="nickname">{{userInfo.nickname || '微信用户'}}</text>
+    <text class="phone" wx:if="{{userInfo.phone}}">{{userInfo.phone}}</text>
+  </view>
+</view>
+
+<view class="card">
+  <view class="section-head" bindtap="onAllOrders">
+    <text>我的订单</text>
+    <text class="more">全部 ></text>
+  </view>
+  <view class="shortcuts">
+    <view
+      class="shortcut"
+      wx:for="{{orderShortcuts}}"
+      wx:key="status"
+      data-status="{{item.status}}"
+      bindtap="onOrderTap"
+    >
+      <text class="icon">{{item.icon}}</text>
+      <text>{{item.label}}</text>
+    </view>
+  </view>
+</view>
+
+<view class="card menu">
+  <view class="menu-item" bindtap="onAddress">📍 收货地址 ></view>
+  <view class="menu-item" bindtap="onContact">💬 联系客服 ></view>
+  <view class="menu-item" bindtap="onPrivacy">📄 隐私协议 ></view>
+</view>
