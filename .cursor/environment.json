@@ -17,7 +17,12 @@
     {
       "name": "shop-api",
       "command": "HOST=0.0.0.0 PORT=3000 npm run dev:foreground",
-      "description": "匠心小铺 API 服务。通过 Cursor Ports 面板转发 3000 端口后，浏览器访问 http://localhost:3000/admin"
+      "description": "匠心小铺 API 服务（端口 3000）"
+    },
+    {
+      "name": "preview-tunnel",
+      "command": "npm run preview:tunnel",
+      "description": "公网预览隧道。打开 .cursor/preview-url.txt 中的链接，无需 Cursor Ports 转发"
     }
   ]
 }

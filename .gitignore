@@ -8,3 +8,4 @@ backend/uploads/*
 dist/
 .api-server.pid
 .api-server.log
+.cursor/preview-url.txt
