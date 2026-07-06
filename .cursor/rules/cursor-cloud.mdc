@@ -1,0 +1,35 @@
+---
+description: Cursor Cloud Agent 开发与端口转发约定
+alwaysApply: true
+---
+
+# Cursor Cloud 开发规则
+
+## API 服务
+
+- 默认端口 **3000**，绑定 **0.0.0.0**
+- 启动：`npm run dev` 或 `HOST=0.0.0.0 PORT=3000 npm run dev:foreground`
+- 健康检查：`curl http://127.0.0.1:3000/health`
+- 管理后台：http://localhost:3000/admin/（admin / admin123）
+
+## 端口转发（必读）
+
+Cloud Agent 中 API 在远程 VM 运行。用户浏览器访问 localhost:3000 需要 Cursor Ports 转发。
+
+- 配置已声明于 `.cursor/environment.json` 的 `ports` 字段
+- API 必须在 **terminals** 中前台运行（`dev:foreground`），以便 Cursor 检测并转发端口
+- 不要用 detached 后台进程替代 terminals 中的服务（会导致浏览器 ERR_CONNECTION_REFUSED）
+
+## 修改后端后
+
+```bash
+npm test
+```
+
+## 环境初始化
+
+新机器或依赖变更后：
+
+```bash
+npm run setup
+```

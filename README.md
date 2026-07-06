@@ -21,6 +21,22 @@
 
 ## 快速开始
 
+### Cursor Cloud Agent 自动配置
+
+项目已包含完整的 Cursor Cloud Agent 配置：
+
+| 文件 | 说明 |
+|------|------|
+| [`.cursor/environment.json`](.cursor/environment.json) | 自动安装依赖、暴露 3000 端口、启动 API 终端 |
+| [`AGENTS.md`](AGENTS.md) | Agent 开发指令与 Cloud 专用说明 |
+| [`.cursor/rules/cursor-cloud.mdc`](.cursor/rules/cursor-cloud.mdc) | 始终生效的 Cloud 开发规则 |
+
+**首次使用**：在 [Cloud Agents 控制台](https://cursor.com/dashboard/cloud-agents#environments) 启动 Agent，等待 `shop-api` 终端就绪后，在 **Ports 面板**转发 3000 端口。
+
+验证环境：`npm run verify`
+
+详细说明见 [`.cursor/README.md`](.cursor/README.md)。
+
 ### Cursor Cloud 用户（浏览器 ERR_CONNECTION_REFUSED）
 
 云端 Agent 中 API 运行在远程 VM，你本机的 `localhost:3000` 需要 **Cursor 端口转发** 才能访问：

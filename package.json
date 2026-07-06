@@ -8,6 +8,8 @@
     "dev:foreground": "node scripts/ensure-api.js --foreground",
     "stop": "node scripts/stop-api.js",
     "setup": "node scripts/ensure-api.js --setup-only",
+    "verify": "node scripts/verify-agent-env.js",
+    "verify:deps": "node scripts/verify-agent-env.js --deps-only",
     "test": "cd backend && npm test"
   }
 }

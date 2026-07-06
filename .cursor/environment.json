@@ -1,5 +1,12 @@
 {
-  "install": "npm run setup",
+  "name": "匠心小铺开发环境",
+  "install": "npm run setup && npm run verify:deps",
+  "env": {
+    "HOST": "0.0.0.0",
+    "PORT": "3000",
+    "MOCK_WX_LOGIN": "true",
+    "NODE_ENV": "development"
+  },
   "ports": [
     {
       "name": "shop-api",
@@ -9,8 +16,8 @@
   "terminals": [
     {
       "name": "shop-api",
-      "command": "npm run dev:foreground",
-      "description": "匠心小铺 API（端口 3000，浏览器访问 /admin）"
+      "command": "HOST=0.0.0.0 PORT=3000 npm run dev:foreground",
+      "description": "匠心小铺 API 服务。通过 Cursor Ports 面板转发 3000 端口后，浏览器访问 http://localhost:3000/admin"
     }
   ]
 }
