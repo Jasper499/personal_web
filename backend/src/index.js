@@ -40,9 +40,13 @@ app.use((err, _req, res, _next) => {
 let server = null;
 
 if (require.main === module) {
-  server = app.listen(PORT, () => {
+  const HOST = process.env.HOST || '0.0.0.0';
+  server = app.listen(PORT, HOST, () => {
     console.log(`匠心小铺 API 运行于 http://localhost:${PORT}`);
     console.log(`管理后台: http://localhost:${PORT}/admin`);
+    if (process.env.CURSOR_AGENT) {
+      console.log('Cursor Cloud: 请在 Ports 面板确认 3000 已转发到本机');
+    }
   });
 }
 

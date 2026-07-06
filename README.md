@@ -21,6 +21,16 @@
 
 ## 快速开始
 
+### Cursor Cloud 用户（浏览器 ERR_CONNECTION_REFUSED）
+
+云端 Agent 中 API 运行在远程 VM，你本机的 `localhost:3000` 需要 **Cursor 端口转发** 才能访问：
+
+1. 点击 Agent 面板右上角的 **插头图标**（Ports）
+2. 确认端口 **3000** 已转发；若没有，手动添加
+3. 用 Ports 面板中的链接打开，或刷新浏览器
+
+项目已配置 [`.cursor/environment.json`](.cursor/environment.json)，新 Agent 会话会自动在 tmux 中启动 API 并暴露 3000 端口。
+
 ### 一键启动（推荐）
 
 在项目根目录执行：
