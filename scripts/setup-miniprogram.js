@@ -2,7 +2,7 @@
 /**
  * 自动配置微信小程序开发环境：
  * - 从 .cursor/preview-url.txt 或环境变量读取 API 地址
- * - 生成 miniprogram/config/env.js
+ * - 健康检查通过后写入 miniprogram/config/env.js
  * - 生成 project.private.config.json（关闭域名校验等）
  */
 const fs = require('fs');
@@ -16,30 +16,24 @@ const PREVIEW_FILE = path.join(ROOT, '.cursor/preview-url.txt');
 const ENV_FILE = path.join(MP, 'config/env.js');
 const PRIVATE_CONFIG = path.join(MP, 'project.private.config.json');
 
-function readPreviewBase() {
-  if (process.env.MINIPROGRAM_API_BASE) {
-    return process.env.MINIPROGRAM_API_BASE.replace(/\/$/, '');
-  }
-  if (fs.existsSync(PREVIEW_FILE)) {
-    const url = fs.readFileSync(PREVIEW_FILE, 'utf8').trim().split('\n')[0].trim();
-    if (url) {
-      try {
-        const u = new URL(url);
-        return `${u.protocol}//${u.host}`;
-      } catch {
-        /* ignore */
-      }
-    }
-  }
-  const port = process.env.PORT || 3000;
-  return `http://localhost:${port}`;
-}
-
 function checkHealth(base) {
   return new Promise((resolve) => {
     const healthUrl = `${base.replace(/\/$/, '')}/health`;
     const lib = healthUrl.startsWith('https') ? https : http;
-    const req = lib.get(healthUrl, (res) => resolve(res.statusCode === 200));
+    const req = lib.get(healthUrl, (res) => {
+      let body = '';
+      res.on('data', (chunk) => {
+        body += chunk;
+      });
+      res.on('end', () => {
+        try {
+          const json = JSON.parse(body);
+          resolve(res.statusCode === 200 && json.status === 'ok');
+        } catch {
+          resolve(false);
+        }
+      });
+    });
     req.on('error', () => resolve(false));
     req.setTimeout(3000, () => {
       req.destroy();
@@ -48,10 +42,51 @@ function checkHealth(base) {
   });
 }
 
+function collectCandidates(port) {
+  const seen = new Set();
+  const list = [];
+
+  function add(raw) {
+    if (!raw) return;
+    const base = raw.replace(/\/$/, '').replace(/\/api$/, '');
+    if (!base || seen.has(base)) return;
+    seen.add(base);
+    list.push(base);
+  }
+
+  add(process.env.MINIPROGRAM_API_BASE);
+
+  if (fs.existsSync(PREVIEW_FILE)) {
+    const url = fs.readFileSync(PREVIEW_FILE, 'utf8').trim().split('\n')[0].trim();
+    if (url) {
+      try {
+        const u = new URL(url);
+        add(`${u.protocol}//${u.host}`);
+      } catch {
+        /* ignore */
+      }
+    }
+  }
+
+  add(`http://localhost:${port}`);
+  add(`http://127.0.0.1:${port}`);
+  return list;
+}
+
+async function resolveApiBase(port) {
+  const candidates = collectCandidates(port);
+  for (const base of candidates) {
+    if (await checkHealth(base)) {
+      return { apiBase: `${base}/api`, healthy: true, source: base };
+    }
+  }
+  const fallback = `http://localhost:${port}`;
+  return { apiBase: `${fallback}/api`, healthy: false, source: fallback };
+}
+
 async function main() {
-  const base = readPreviewBase();
-  const apiBase = `${base.replace(/\/$/, '')}/api`;
-  const healthy = await checkHealth(base);
+  const port = process.env.PORT || 3000;
+  const { apiBase, healthy, source } = await resolveApiBase(port);
 
   fs.mkdirSync(path.dirname(ENV_FILE), { recursive: true });
   fs.writeFileSync(
@@ -84,10 +119,17 @@ module.exports = {
 
   console.log('[miniprogram:setup] 配置完成');
   console.log(`  API 地址: ${apiBase}`);
+  console.log(`  选用来源: ${source}`);
   console.log(`  API 健康: ${healthy ? '✓ 正常' : '✗ 未响应（请先 npm run dev）'}`);
   console.log(`  已写入: miniprogram/config/env.js`);
   console.log(`  已写入: miniprogram/project.private.config.json`);
   console.log('');
+  if (!healthy) {
+    console.log('⚠️  后端未运行，小程序只能显示空壳页面。');
+    console.log('   请在项目根目录执行: npm run dev');
+    console.log('   然后重新执行: npm run miniprogram:setup');
+    console.log('');
+  }
   console.log('下一步: npm run miniprogram:open  （自动打开微信开发者工具）');
 }
 

@@ -93,3 +93,29 @@
   color: #ADB5BD;
   margin-left: 8rpx;
 }
+
+.state-panel {
+  margin: 48rpx 24rpx;
+  padding: 48rpx 32rpx;
+  background: #fff;
+  border-radius: 16rpx;
+  text-align: center;
+}
+
+.state-panel.error {
+  border: 1rpx solid #F8D7DA;
+  background: #FFF5F5;
+}
+
+.state-text {
+  display: block;
+  font-size: 28rpx;
+  color: #6C757D;
+  line-height: 1.6;
+}
+
+.retry-btn {
+  margin-top: 24rpx;
+  background: #E85D4C;
+  color: #fff;
+}

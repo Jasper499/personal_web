@@ -39,8 +39,24 @@ Set-Location $target
 Write-Host "安装依赖..."
 npm run setup
 npm run miniprogram:setup
+
+Write-Host ""
+Write-Host "正在新窗口启动 API 服务（请勿关闭该窗口）..."
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$target'; Write-Host '匠心小铺 API 服务'; npm run dev"
+
+Write-Host "等待 API 启动..."
+Start-Sleep -Seconds 8
+npm run miniprogram:setup
 npm run miniprogram:open
 
 Write-Host ""
-Write-Host "完成! 小程序目录: $target\miniprogram"
-Write-Host "启动 API: cd $target; npm run dev"
+Write-Host "=========================================="
+Write-Host "  安装完成!"
+Write-Host "  项目目录: $target"
+Write-Host "  小程序目录: $target\miniprogram"
+Write-Host ""
+Write-Host "  若首页空白，请确认："
+Write-Host "  1. 另一个 PowerShell 窗口中 API 正在运行"
+Write-Host "  2. 微信开发者工具 -> 详情 -> 不校验合法域名"
+Write-Host "  3. 点击「编译」刷新小程序"
+Write-Host "=========================================="

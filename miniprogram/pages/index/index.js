@@ -8,6 +8,8 @@ Page({
     categories: [],
     products: [],
     keyword: '',
+    loading: true,
+    loadError: '',
   },
 
   onShow() {
@@ -16,6 +18,7 @@ Page({
   },
 
   async loadData() {
+    this.setData({ loading: true, loadError: '' });
     try {
       const [banners, categories, productData] = await Promise.all([
         request('/banners'),
@@ -26,10 +29,20 @@ Page({
         banners,
         categories: categories.slice(0, 8),
         products: productData.list,
+        loading: false,
+        loadError: '',
       });
     } catch (e) {
+      this.setData({
+        loading: false,
+        loadError: '数据加载失败，请确认已运行 npm run dev 后点击重试',
+      });
       console.error(e);
     }
+  },
+
+  onRetry() {
+    this.loadData();
   },
 
   onSearchTap() {
