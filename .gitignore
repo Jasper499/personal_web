@@ -10,3 +10,4 @@ dist/
 .api-server.log
 .cursor/preview-url.txt
 .cursor/tunnel.log
+miniprogram/project.private.config.json

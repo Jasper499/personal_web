@@ -4,8 +4,11 @@
   "setting": {
     "urlCheck": false,
     "es6": true,
+    "enhance": true,
     "postcss": true,
-    "minified": true
+    "minified": false,
+    "compileHotReLoad": true,
+    "bigPackageSizeSupport": true
   },
   "compileType": "miniprogram",
   "libVersion": "3.3.4",

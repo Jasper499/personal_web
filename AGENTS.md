@@ -71,9 +71,14 @@ cd backend && npm test                         # 期望 4/4 通过
 
 ### 小程序联调
 
+```bash
+npm run miniprogram:setup   # 自动配置 API 地址
+npm run miniprogram:open    # 本地自动打开微信开发者工具
+```
+
 - 微信开发者工具导入 `miniprogram/` 目录
-- `miniprogram/app.js` 中 `apiBase` 默认为 `http://localhost:3000/api`
-- 开发阶段勾选「不校验合法域名」
+- `config/env.js` 由 setup 脚本自动生成，指向公网隧道 API
+- 开发阶段已配置 `urlCheck: false`
 
 ### Git 分支
 

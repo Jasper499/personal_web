@@ -36,6 +36,14 @@ function waitForApi() {
 function saveUrl(adminUrl) {
   fs.mkdirSync(OUT_DIR, { recursive: true });
   fs.writeFileSync(OUT_FILE, `${adminUrl}\n`);
+  try {
+    require('child_process').execSync('node scripts/setup-miniprogram.js', {
+      cwd: path.join(__dirname, '..'),
+      stdio: 'pipe',
+    });
+  } catch {
+    /* setup optional */
+  }
   console.log('');
   console.log('========================================');
   console.log('  公网预览（Cloudflare 隧道）');

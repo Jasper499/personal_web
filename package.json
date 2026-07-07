@@ -11,6 +11,8 @@
     "verify": "node scripts/verify-agent-env.js",
     "verify:deps": "node scripts/verify-agent-env.js --deps-only",
     "preview:tunnel": "node scripts/start-tunnel.js",
+    "miniprogram:setup": "node scripts/setup-miniprogram.js",
+    "miniprogram:open": "node scripts/open-wechat-devtools.js",
     "test": "cd backend && npm test"
   }
 }

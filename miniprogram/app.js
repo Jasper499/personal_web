@@ -1,12 +1,13 @@
 const { request, getToken } = require('./request');
 const { track } = require('./analytics');
+const env = require('./config/env');
 
 const PRIVACY_KEY = 'privacy_agreed';
 
 App({
   globalData: {
     userInfo: null,
-    apiBase: 'http://localhost:3000/api',
+    apiBase: env.apiBase,
   },
 
   onLaunch() {
