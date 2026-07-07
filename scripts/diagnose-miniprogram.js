@@ -42,6 +42,18 @@ function readApiBase() {
   return null;
 }
 
+function readApiCandidates() {
+  if (!fs.existsSync(ENV_FILE)) return [];
+  const content = fs.readFileSync(ENV_FILE, 'utf8');
+  const match = content.match(/apiBaseCandidates:\s*(\[[\s\S]*?\])/);
+  if (!match) return [];
+  try {
+    return JSON.parse(match[1].replace(/'/g, '"'));
+  } catch {
+    return [];
+  }
+}
+
 function httpGet(url) {
   return new Promise((resolve) => {
     const req = http.get(url, (res) => {
@@ -68,17 +80,19 @@ async function main() {
 
   console.log('[1] 检查 env.js');
   const apiBase = readApiBase();
+  const apiCandidates = readApiCandidates();
   if (!apiBase) {
     bad('未找到 miniprogram/config/env.js');
     warn('请执行: npm run miniprogram:setup');
   } else {
     ok(`apiBase = ${apiBase}`);
+    if (apiCandidates.length > 0) {
+      ok(`apiBaseCandidates = ${apiCandidates.join(', ')}`);
+    } else {
+      warn('未检测到 apiBaseCandidates，建议重新执行 npm run miniprogram:setup');
+    }
     if (!apiBase.endsWith('/api')) {
       bad('apiBase 必须以 /api 结尾');
-    } else if (apiBase.includes('trycloudflare.com')) {
-      bad('仍指向云端隧道，本机开发应改为 http://localhost:3000/api');
-    } else if (!apiBase.includes('localhost') && !apiBase.includes('127.0.0.1')) {
-      warn(`apiBase 不是本机地址: ${apiBase}`);
     } else {
       ok('apiBase 格式正确');
     }
@@ -126,10 +140,10 @@ async function main() {
   console.log('');
   if (failed === 0) {
     console.log('========================================');
-    console.log('  诊断通过！若微信里仍 404，请：');
+    console.log('  诊断通过！当前 env.js 已支持自动候选地址切换。');
     console.log('  1. 微信开发者工具 → 编译');
-    console.log('  2. 调试器 → Console 查看 [API] 日志');
-    console.log('  3. 详情 → 不校验合法域名');
+    console.log('  2. 详情 → 不校验合法域名');
+    console.log('  3. 手机预览时，确保手机与电脑在同一 Wi-Fi 或已启动隧道');
     console.log('========================================');
   } else {
     console.log('========================================');
@@ -138,7 +152,6 @@ async function main() {
     console.log('  PowerShell:');
     console.log('    cd ' + ROOT);
     console.log('    npm run dev');
-    console.log('    $env:MINIPROGRAM_API_BASE="http://localhost:3000"');
     console.log('    npm run miniprogram:setup');
     console.log('');
     console.log('  或一键修复: npm run fix:miniprogram');

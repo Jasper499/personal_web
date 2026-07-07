@@ -7,6 +7,7 @@
  */
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const http = require('http');
 const https = require('https');
 
@@ -42,6 +43,25 @@ function checkHealth(base) {
   });
 }
 
+function getLanCandidates(port) {
+  const interfaces = os.networkInterfaces();
+  const results = [];
+  const seen = new Set();
+
+  Object.values(interfaces).forEach((items) => {
+    (items || []).forEach((item) => {
+      if (!item || item.internal) return;
+      if (item.family !== 'IPv4') return;
+      const base = `http://${item.address}:${port}`;
+      if (seen.has(base)) return;
+      seen.add(base);
+      results.push(base);
+    });
+  });
+
+  return results;
+}
+
 function collectCandidates(port) {
   const seen = new Set();
   const list = [];
@@ -58,11 +78,13 @@ function collectCandidates(port) {
 
   const localhost = `http://localhost:${port}`;
   const loopback = `http://127.0.0.1:${port}`;
+  const lanCandidates = getLanCandidates(port);
 
   // 本机开发优先 localhost，避免仓库内过期云端隧道地址导致 404
   if (!process.env.CURSOR_AGENT) {
     add(localhost);
     add(loopback);
+    lanCandidates.forEach(add);
   }
 
   if (fs.existsSync(PREVIEW_FILE)) {
@@ -80,6 +102,7 @@ function collectCandidates(port) {
   if (process.env.CURSOR_AGENT) {
     add(localhost);
     add(loopback);
+    lanCandidates.forEach(add);
   }
 
   return list;
@@ -98,6 +121,7 @@ async function resolveApiBase(port) {
 
 async function main() {
   const port = process.env.PORT || 3000;
+  const candidates = collectCandidates(port);
   const { apiBase, healthy, source } = await resolveApiBase(port);
 
   fs.mkdirSync(path.dirname(ENV_FILE), { recursive: true });
@@ -109,6 +133,7 @@ async function main() {
  */
 module.exports = {
   apiBase: '${apiBase}',
+  apiBaseCandidates: ${JSON.stringify(candidates.map((base) => `${base}/api`), null, 2).replace(/\n/g, '\n  ')},
 };
 `
   );
@@ -131,6 +156,7 @@ module.exports = {
 
   console.log('[miniprogram:setup] 配置完成');
   console.log(`  API 地址: ${apiBase}`);
+  console.log(`  候选地址: ${candidates.map((base) => `${base}/api`).join(', ')}`);
   console.log(`  选用来源: ${source}`);
   console.log(`  API 健康: ${healthy ? '✓ 正常' : '✗ 未响应（请先 npm run dev）'}`);
   console.log(`  已写入: miniprogram/config/env.js`);

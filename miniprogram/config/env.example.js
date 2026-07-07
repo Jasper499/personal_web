@@ -4,4 +4,5 @@
  */
 module.exports = {
   apiBase: 'http://localhost:3000/api',
+  apiBaseCandidates: ['http://localhost:3000/api'],
 };

@@ -26,7 +26,6 @@ if (-not $healthOk) {
 }
 
 Write-Host "[2/4] 写入本机 API 配置..."
-$env:MINIPROGRAM_API_BASE = "http://localhost:3000"
 npm run miniprogram:setup
 
 Write-Host "[3/4] 运行诊断..."
@@ -43,5 +42,5 @@ Write-Host "接下来请在微信开发者工具中："
 Write-Host "  1. 确认导入目录: $root\miniprogram"
 Write-Host "  2. 详情 -> 本地设置 -> 勾选「不校验合法域名」"
 Write-Host "  3. 点击「编译」"
-Write-Host "  4. 调试器 -> Console，查看 [API] 开头的日志"
+Write-Host "  4. 若用手机预览，将自动优先尝试局域网 IP / 隧道地址"
 Write-Host ""

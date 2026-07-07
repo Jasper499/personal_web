@@ -39,8 +39,6 @@ Set-Location $target
 Write-Host "安装依赖..."
 npm run setup
 
-# 本机开发强制使用 localhost，避免 ZIP 内云端隧道地址导致 404
-$env:MINIPROGRAM_API_BASE = "http://localhost:3000"
 npm run miniprogram:setup
 
 Write-Host ""
@@ -49,7 +47,6 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$target'; Wri
 
 Write-Host "等待 API 启动..."
 Start-Sleep -Seconds 8
-$env:MINIPROGRAM_API_BASE = "http://localhost:3000"
 npm run miniprogram:setup
 npm run miniprogram:open
 
@@ -63,4 +60,5 @@ Write-Host "  若首页空白，请确认："
 Write-Host "  1. 另一个 PowerShell 窗口中 API 正在运行"
 Write-Host "  2. 微信开发者工具 -> 详情 -> 不校验合法域名"
 Write-Host "  3. 点击「编译」刷新小程序"
+Write-Host "  4. 真机预览会自动优先尝试局域网 IP 或公网隧道"
 Write-Host "=========================================="
