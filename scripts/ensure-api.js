@@ -77,6 +77,12 @@ function setup() {
   if (!fs.existsSync(dbFile)) {
     log('初始化数据库与种子数据...');
     run('npm run db:setup', BACKEND);
+  } else {
+    try {
+      execSync('node scripts/ensure-demo-data.js', { cwd: ROOT, stdio: 'inherit' });
+    } catch {
+      log('演示数据检查跳过（可手动执行 npm run db:reseed）');
+    }
   }
   if (!fs.existsSync(path.join(ROOT, 'miniprogram/assets/icons/home.png'))) {
     log('生成小程序 TabBar 图标...');

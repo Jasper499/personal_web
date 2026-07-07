@@ -94,20 +94,24 @@ async function main() {
   ];
 
   for (const [i, p] of products.entries()) {
+    const productId = i + 1;
+    const payload = {
+      ...p,
+      images: JSON.stringify([p.coverImage, `${PLACEHOLDER}/p${productId}b/400/400`]),
+      isActive: true,
+    };
     await prisma.product.upsert({
-      where: { id: i + 1 },
-      update: {
-        ...p,
-        images: JSON.stringify([p.coverImage, `${PLACEHOLDER}/p${i + 1}b/400/400`]),
-        isActive: true,
-      },
-      create: {
-        ...p,
-        images: JSON.stringify([p.coverImage, `${PLACEHOLDER}/p${i + 1}b/400/400`]),
-        isActive: true,
-      },
+      where: { id: productId },
+      update: payload,
+      create: { id: productId, ...payload },
     });
   }
+
+  // 修复演示数据：确保各分类商品均上架（避免后台误操作导致分类页空白）
+  await prisma.product.updateMany({
+    where: { id: { in: products.map((_, i) => i + 1) } },
+    data: { isActive: true },
+  });
 
   await prisma.productSku.upsert({
     where: { id: 1 },

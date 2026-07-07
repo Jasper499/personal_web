@@ -21,29 +21,40 @@ Page({
   },
 
   async loadCategories() {
-    const categories = await request('/categories');
-    const activeId = this.data.activeId || categories[0]?.id;
-    this.setData({ categories, activeId });
-    this.loadProducts(true);
+    try {
+      const categories = await request('/categories');
+      const activeId = Number(this.data.activeId) || categories[0]?.id;
+      this.setData({ categories, activeId });
+      await this.loadProducts(true);
+    } catch (e) {
+      console.error(e);
+    }
   },
 
   async loadProducts(reset = false) {
     if (!this.data.activeId) return;
     const page = reset ? 1 : this.data.page;
-    const data = await request(
-      `/products?categoryId=${this.data.activeId}&page=${page}&pageSize=10`
-    );
-    const products = reset ? data.list : [...this.data.products, ...data.list];
-    this.setData({
-      products,
-      page: page + 1,
-      hasMore: products.length < data.total,
-    });
+    try {
+      const data = await request(
+        `/products?categoryId=${this.data.activeId}&page=${page}&pageSize=10`
+      );
+      const products = reset ? data.list : [...this.data.products, ...data.list];
+      this.setData({
+        products,
+        page: page + 1,
+        hasMore: products.length < data.total,
+      });
+    } catch (e) {
+      console.error(e);
+      if (reset) {
+        this.setData({ products: [], hasMore: false });
+      }
+    }
   },
 
   onCategoryTap(e) {
-    const id = e.currentTarget.dataset.id;
-    this.setData({ activeId: id });
+    const id = Number(e.currentTarget.dataset.id);
+    this.setData({ activeId: id, page: 1 });
     this.loadProducts(true);
   },
 

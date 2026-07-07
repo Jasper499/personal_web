@@ -81,9 +81,18 @@ Page({
       track('purchase', { orderId: order.id, payAmount });
       wx.hideLoading();
       wx.removeStorageSync('checkoutItems');
+      wx.showToast({ title: '支付成功', icon: 'success' });
       wx.redirectTo({ url: `/pages/order/detail?id=${order.id}` });
     } catch (e) {
       wx.hideLoading();
+      const msg = (e && e.message) || '提交失败，请重试';
+      wx.showModal({
+        title: '下单失败',
+        content: msg.includes('下架') || msg.includes('不存在')
+          ? `${msg}\n\n演示商品可能已下架，请在项目根目录执行：\nnpm run db:reseed`
+          : msg,
+        showCancel: false,
+      });
     }
   },
 });

@@ -25,10 +25,13 @@ if (-not $healthOk) {
   Start-Sleep -Seconds 10
 }
 
-Write-Host "[2/4] 写入本机 API 配置..."
+Write-Host "[2/5] 修复演示商品数据..."
+npm run db:reseed
+
+Write-Host "[3/5] 写入本机 API 配置..."
 npm run miniprogram:setup
 
-Write-Host "[3/4] 运行诊断..."
+Write-Host "[4/5] 运行诊断..."
 npm run miniprogram:doctor
 if ($LASTEXITCODE -ne 0) {
   Write-Host ""
@@ -36,7 +39,7 @@ if ($LASTEXITCODE -ne 0) {
   exit 1
 }
 
-Write-Host "[4/4] 完成"
+Write-Host "[5/5] 完成"
 Write-Host ""
 Write-Host "接下来请在微信开发者工具中："
 Write-Host "  1. 确认导入目录: $root\miniprogram"

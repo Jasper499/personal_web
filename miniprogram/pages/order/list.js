@@ -53,8 +53,16 @@ Page({
 
   async onPay(e) {
     const id = e.currentTarget.dataset.id;
-    await request('/pay/mock-success', { method: 'POST', data: { orderId: id } });
-    this.loadOrders();
+    try {
+      wx.showLoading({ title: '支付中' });
+      await request('/pay/mock-success', { method: 'POST', data: { orderId: id } });
+      wx.hideLoading();
+      wx.showToast({ title: '支付成功', icon: 'success' });
+      this.loadOrders();
+    } catch (err) {
+      wx.hideLoading();
+      wx.showToast({ title: (err && err.message) || '支付失败', icon: 'none' });
+    }
   },
 
   async onCancel(e) {

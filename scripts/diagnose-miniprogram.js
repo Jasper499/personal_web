@@ -109,7 +109,37 @@ async function main() {
   }
 
   console.log('');
-  console.log('[3] 检查小程序接口');
+  console.log('[3] 检查各分类商品');
+  const categoryRes = await httpGet(`${LOCAL_BASE}/api/categories`);
+  let categoryList = [];
+  if (categoryRes.status === 200) {
+    try {
+      categoryList = JSON.parse(categoryRes.body).data || [];
+    } catch {
+      categoryList = [];
+    }
+  }
+  for (const category of categoryList) {
+    const res = await httpGet(`${LOCAL_BASE}/api/products?categoryId=${category.id}&pageSize=1`);
+    if (res.status === 200) {
+      try {
+        const total = JSON.parse(res.body).data?.total ?? 0;
+        if (total > 0) {
+          ok(`${category.name} 分类有 ${total} 个上架商品`);
+        } else {
+          bad(`${category.name} 分类无上架商品`);
+          warn('请执行: npm run db:reseed');
+        }
+      } catch {
+        bad(`${category.name} 分类商品检查失败`);
+      }
+    } else {
+      bad(`${category.name} 分类接口异常`);
+    }
+  }
+
+  console.log('');
+  console.log('[4] 检查小程序接口');
   const endpoints = ['/api/banners', '/api/categories', '/api/products?sort=sales&pageSize=6'];
   for (const ep of endpoints) {
     const res = await httpGet(`${LOCAL_BASE}${ep}`);
@@ -126,7 +156,7 @@ async function main() {
   }
 
   console.log('');
-  console.log('[4] 检查微信开发者工具导入目录');
+  console.log('[5] 检查微信开发者工具导入目录');
   const mpDir = path.join(ROOT, 'miniprogram');
   const appJson = path.join(mpDir, 'app.json');
   if (fs.existsSync(appJson)) {

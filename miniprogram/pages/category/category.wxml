@@ -11,6 +11,10 @@
     </view>
   </scroll-view>
   <scroll-view class="main" scroll-y bindscrolltolower="onReachBottom">
+    <view wx:if="{{products.length === 0}}" class="empty">
+      <text>该分类暂无商品</text>
+      <text class="empty-tip">可执行 npm run db:reseed 恢复演示数据</text>
+    </view>
     <view
       class="product-row"
       wx:for="{{products}}"
