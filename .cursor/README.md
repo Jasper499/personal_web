@@ -37,6 +37,30 @@ node scripts/verify-agent-env.js
 | 现象 | 处理 |
 |------|------|
 | 浏览器 ERR_CONNECTION_REFUSED | 打开 Ports 面板，手动转发 3000 |
+| **Unable to forward localhost:3000** | 见下方专节 |
 | API 未启动 | 查看 `shop-api` 终端日志，或运行 `npm run dev` |
 | 依赖缺失 | `npm run setup` |
 | 端口占用 | `npm run stop` 后重启 |
+
+### 报错：Unable to forward localhost:3000
+
+该错误表示 **Cursor 无法在你电脑上建立 3000 转发**，常见原因：
+
+1. **3000 已被转发过（最常见）**  
+   - 打开底部 **PORTS** 面板  
+   - 找到已有的 `3000` 条目 → 右键 **Close / Stop Forwarding**  
+   - 等 5 秒后再重新 Forward
+
+2. **你本机 3000 已被占用**（本地另开了 React/Next 等）  
+   - Mac 终端执行：`lsof -i :3000`，结束占用进程  
+   - 或在 PORTS 里把远程 3000 映射到本地 **3002**（不要填 3000）
+
+3. **多个 Agent 会话冲突**  
+   - 只保留一个 Agent 标签页活跃  
+   - `Cmd/Ctrl + Shift + P` → **Reload Window** 后重试
+
+4. **仍无法转发 → 用公网预览（推荐）**  
+   ```bash
+   npm run preview:tunnel
+   ```  
+   打开 `.cursor/preview-url.txt` 中的 `https://xxx.loca.lt/admin/` 链接
