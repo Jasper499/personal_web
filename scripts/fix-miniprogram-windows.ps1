@@ -1,0 +1,47 @@
+# 一键修复小程序 404（Windows PowerShell）
+# 用法: 在项目根目录执行  npm run fix:miniprogram
+
+$ErrorActionPreference = "Stop"
+$root = $PSScriptRoot | Split-Path -Parent
+Set-Location $root
+
+Write-Host ""
+Write-Host "=========================================="
+Write-Host "  匠心小铺 - 小程序一键修复"
+Write-Host "=========================================="
+Write-Host ""
+
+Write-Host "[1/4] 检查 API..."
+$healthOk = $false
+try {
+  $r = Invoke-WebRequest -Uri "http://localhost:3000/health" -UseBasicParsing -TimeoutSec 3
+  if ($r.StatusCode -eq 200) { $healthOk = $true }
+} catch {}
+
+if (-not $healthOk) {
+  Write-Host "  API 未运行，正在新窗口启动..."
+  Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$root'; Write-Host '匠心小铺 API - 请勿关闭'; npm run dev"
+  Write-Host "  等待 10 秒..."
+  Start-Sleep -Seconds 10
+}
+
+Write-Host "[2/4] 写入本机 API 配置..."
+$env:MINIPROGRAM_API_BASE = "http://localhost:3000"
+npm run miniprogram:setup
+
+Write-Host "[3/4] 运行诊断..."
+npm run miniprogram:doctor
+if ($LASTEXITCODE -ne 0) {
+  Write-Host ""
+  Write-Host "诊断未通过，请把上方输出发给开发者。"
+  exit 1
+}
+
+Write-Host "[4/4] 完成"
+Write-Host ""
+Write-Host "接下来请在微信开发者工具中："
+Write-Host "  1. 确认导入目录: $root\miniprogram"
+Write-Host "  2. 详情 -> 本地设置 -> 勾选「不校验合法域名」"
+Write-Host "  3. 点击「编译」"
+Write-Host "  4. 调试器 -> Console，查看 [API] 开头的日志"
+Write-Host ""

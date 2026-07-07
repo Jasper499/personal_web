@@ -38,6 +38,7 @@ function request(path, options = {}) {
         ...options.header,
       },
       success(res) {
+        console.log(`[API] ${options.method || 'GET'} ${url} → ${res.statusCode}`);
         if (res.statusCode === 404) {
           const msg = `接口不存在(404): ${url}`;
           console.error(msg);
@@ -70,6 +71,7 @@ function request(path, options = {}) {
         }
       },
       fail() {
+        console.error(`[API] ${options.method || 'GET'} ${url} → 连接失败`);
         const msg = `无法连接服务器: ${url}`;
         if (!options.silent) {
           wx.showToast({ title: '请先运行 npm run dev', icon: 'none', duration: 3000 });

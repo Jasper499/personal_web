@@ -17,6 +17,7 @@ App({
   },
 
   onLaunch() {
+    console.log('[匠心小铺] apiBase =', this.globalData.apiBase);
     this.checkApiConnection();
     const agreed = wx.getStorageSync(PRIVACY_KEY);
     if (!agreed) {
