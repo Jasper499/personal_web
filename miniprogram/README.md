@@ -47,6 +47,24 @@ npm run miniprogram:open    # 自动打开微信开发者工具
 |------|------|------|
 | 只有 Tab 栏，无 Banner/商品 | 后端 API 未运行 | 在项目根目录执行 `npm run dev` |
 | 提示「无法连接服务器」 | API 地址错误或隧道过期 | 重新 `npm run miniprogram:setup` 后编译 |
+| 调试器显示 **404 Not Found** | `env.js` 指向云端地址或缺少 `/api` | 见下方「404 排错」 |
+
+### 404 排错（调试器 Network 面板）
+
+1. 打开 `miniprogram/config/env.js`，确认内容为：
+   ```js
+   apiBase: 'http://localhost:3000/api',
+   ```
+   注意末尾必须有 **`/api`**，不能写成 `http://localhost:3000`。
+2. 在项目根目录执行：
+   ```bash
+   npm run dev
+   set MINIPROGRAM_API_BASE=http://localhost:3000   # Windows CMD
+   # 或 PowerShell: $env:MINIPROGRAM_API_BASE="http://localhost:3000"
+   npm run miniprogram:setup
+   ```
+3. 微信开发者工具点击 **编译**，在 Network 中确认请求 URL 形如：
+   `http://localhost:3000/api/banners`（不是 `/banners`）
 | 页面简陋，与设计稿差距大 | 当前为 **MVP 线框版**，非最终高保真 UI | 见 `docs/03-design/` 设计文档 |
 
 Windows 方案一安装后，请保持 **API 窗口** 运行，再在微信开发者工具点 **编译**。

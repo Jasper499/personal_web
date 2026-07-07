@@ -11,3 +11,4 @@ dist/
 .cursor/preview-url.txt
 .cursor/tunnel.log
 miniprogram/project.private.config.json
+miniprogram/config/env.js

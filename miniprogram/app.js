@@ -1,13 +1,19 @@
-const { request, getToken, checkHealth, getApiRoot } = require('./utils/request');
+const { request, getToken, checkHealth, getApiRoot, normalizeApiBase } = require('./utils/request');
 const { track } = require('./utils/analytics');
-const env = require('./config/env');
+
+let env;
+try {
+  env = require('./config/env');
+} catch {
+  env = require('./config/env.example');
+}
 
 const PRIVACY_KEY = 'privacy_agreed';
 
 App({
   globalData: {
     userInfo: null,
-    apiBase: env.apiBase,
+    apiBase: normalizeApiBase(env.apiBase),
   },
 
   onLaunch() {

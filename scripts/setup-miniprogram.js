@@ -56,6 +56,15 @@ function collectCandidates(port) {
 
   add(process.env.MINIPROGRAM_API_BASE);
 
+  const localhost = `http://localhost:${port}`;
+  const loopback = `http://127.0.0.1:${port}`;
+
+  // 本机开发优先 localhost，避免仓库内过期云端隧道地址导致 404
+  if (!process.env.CURSOR_AGENT) {
+    add(localhost);
+    add(loopback);
+  }
+
   if (fs.existsSync(PREVIEW_FILE)) {
     const url = fs.readFileSync(PREVIEW_FILE, 'utf8').trim().split('\n')[0].trim();
     if (url) {
@@ -68,8 +77,11 @@ function collectCandidates(port) {
     }
   }
 
-  add(`http://localhost:${port}`);
-  add(`http://127.0.0.1:${port}`);
+  if (process.env.CURSOR_AGENT) {
+    add(localhost);
+    add(loopback);
+  }
+
   return list;
 }
 

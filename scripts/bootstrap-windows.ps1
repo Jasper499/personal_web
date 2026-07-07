@@ -38,6 +38,9 @@ if ($inner -and $inner.FullName -ne $target) {
 Set-Location $target
 Write-Host "安装依赖..."
 npm run setup
+
+# 本机开发强制使用 localhost，避免 ZIP 内云端隧道地址导致 404
+$env:MINIPROGRAM_API_BASE = "http://localhost:3000"
 npm run miniprogram:setup
 
 Write-Host ""
@@ -46,6 +49,7 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$target'; Wri
 
 Write-Host "等待 API 启动..."
 Start-Sleep -Seconds 8
+$env:MINIPROGRAM_API_BASE = "http://localhost:3000"
 npm run miniprogram:setup
 npm run miniprogram:open
 
