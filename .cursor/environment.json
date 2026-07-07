@@ -22,7 +22,7 @@
     {
       "name": "preview-tunnel",
       "command": "npm run preview:tunnel",
-      "description": "公网预览隧道。打开 .cursor/preview-url.txt 中的链接，无需 Cursor Ports 转发"
+      "description": "Cloudflare 公网预览隧道。打开 .cursor/preview-url.txt 中的链接"
     }
   ]
 }

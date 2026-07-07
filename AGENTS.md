@@ -35,7 +35,8 @@ Cloud Agent 在远程 VM 运行，`localhost:3000` 不会自动映射到你电�
 npm run preview:tunnel
 ```
 
-打开 `.cursor/preview-url.txt` 中的链接。首次 loca.lt 验证页点击 **Continue**。
+打开 `.cursor/preview-url.txt` 中的链接。  
+若出现 **503 Tunnel Unavailable**，说明隧道已断开，重新运行 `npm run preview:tunnel` 获取新链接。
 
 #### 方式 B：Cursor 端口转发
 

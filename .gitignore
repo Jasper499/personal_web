@@ -9,3 +9,4 @@ dist/
 .api-server.pid
 .api-server.log
 .cursor/preview-url.txt
+.cursor/tunnel.log
