@@ -9,7 +9,8 @@ const router = express.Router();
 
 async function wxCode2Session(code) {
   if (process.env.MOCK_WX_LOGIN === 'true') {
-    return { openid: `mock_${code || 'dev_user'}` };
+    // 开发模式固定 openid，避免每次 wx.login 的 code 不同导致用户身份变化、订单无法支付
+    return { openid: 'mock_dev_user' };
   }
   const url = `https://api.weixin.qq.com/sns/jscode2session?appid=${process.env.WX_APPID}&secret=${process.env.WX_SECRET}&js_code=${code}&grant_type=authorization_code`;
   const res = await fetch(url);

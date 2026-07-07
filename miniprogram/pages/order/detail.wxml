@@ -33,4 +33,9 @@
     <view class="row total"><text>实付金额</text><text class="price">￥{{order.payAmount}}</text></view>
     <view class="row"><text>订单编号</text><text>{{order.orderNo}}</text></view>
   </view>
+
+  <view class="footer" wx:if="{{order.status === 'pending'}}">
+    <view class="btn-secondary" bindtap="onCancel">取消订单</view>
+    <view class="btn-primary" bindtap="onPay">模拟支付</view>
+  </view>
 </view>

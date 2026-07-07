@@ -1,4 +1,5 @@
 const { request } = require('../../utils/request');
+const { mockPayOrder } = require('../../utils/pay');
 
 const TABS = [
   { key: '', label: '全部' },
@@ -55,13 +56,17 @@ Page({
     const id = e.currentTarget.dataset.id;
     try {
       wx.showLoading({ title: '支付中' });
-      await request('/pay/mock-success', { method: 'POST', data: { orderId: id } });
+      await mockPayOrder(id);
       wx.hideLoading();
       wx.showToast({ title: '支付成功', icon: 'success' });
       this.loadOrders();
     } catch (err) {
       wx.hideLoading();
-      wx.showToast({ title: (err && err.message) || '支付失败', icon: 'none' });
+      wx.showModal({
+        title: '支付失败',
+        content: (err && err.message) || '请重新编译小程序后重试',
+        showCancel: false,
+      });
     }
   },
 

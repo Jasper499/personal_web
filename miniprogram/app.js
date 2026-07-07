@@ -68,6 +68,7 @@ App({
       track('app_launch', { userId: data.user.id });
     } catch (e) {
       console.error('登录失败', e);
+      wx.showToast({ title: '登录失败，请重新编译', icon: 'none' });
     }
   },
 

@@ -34,12 +34,15 @@ router.post('/prepay', authUser, async (req, res) => {
 });
 
 router.post('/mock-success', authUser, async (req, res) => {
-  const { orderId } = req.body;
+  const orderId = parseInt(req.body.orderId, 10);
+  if (!orderId) {
+    return fail(res, 400, 40001, '缺少有效 orderId');
+  }
   const order = await prisma.order.findFirst({
     where: { id: orderId, userId: req.userId },
   });
   if (!order) {
-    return fail(res, 404, 40400, '订单不存在');
+    return fail(res, 404, 40400, '订单不存在或不属于当前用户，请重新登录后重试');
   }
   if (order.status !== 'pending') {
     return success(res, { id: order.id, status: order.status, message: '订单已处理' });

@@ -56,3 +56,34 @@
   margin-top: 8rpx;
   padding-top: 16rpx;
 }
+
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 24rpx;
+  padding: 24rpx;
+  background: #fff;
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.btn-secondary,
+.btn-primary {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+}
+
+.btn-secondary {
+  background: #F8F9FA;
+  color: #6C757D;
+}
+
+.btn-primary {
+  background: #E85D4C;
+  color: #fff;
+}

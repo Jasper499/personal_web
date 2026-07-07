@@ -1,4 +1,5 @@
 const { request } = require('../../utils/request');
+const { mockPayOrder } = require('../../utils/pay');
 const { track } = require('../../utils/analytics');
 
 Page({
@@ -77,7 +78,7 @@ Page({
         },
       });
       track('begin_checkout', { orderId: order.id, payAmount });
-      await request('/pay/mock-success', { method: 'POST', data: { orderId: order.id } });
+      await mockPayOrder(order.id);
       track('purchase', { orderId: order.id, payAmount });
       wx.hideLoading();
       wx.removeStorageSync('checkoutItems');

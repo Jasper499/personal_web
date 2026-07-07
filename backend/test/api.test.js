@@ -51,9 +51,11 @@ async function request(method, path, body, token) {
 }
 
 test('wx-login mock', async () => {
-  const res = await request('POST', '/api/auth/wx-login', { code: 'test_user' });
-  assert.equal(res.code, 0);
-  assert.ok(res.data.token);
+  const res1 = await request('POST', '/api/auth/wx-login', { code: 'code_a' });
+  const res2 = await request('POST', '/api/auth/wx-login', { code: 'code_b' });
+  assert.equal(res1.code, 0);
+  assert.equal(res2.code, 0);
+  assert.equal(res1.data.user.id, res2.data.user.id, '开发模式应复用同一用户');
 });
 
 test('get products', async () => {
