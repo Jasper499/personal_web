@@ -13,6 +13,7 @@
     "preview:tunnel": "node scripts/start-tunnel.js",
     "miniprogram:setup": "node scripts/setup-miniprogram.js",
     "miniprogram:open": "node scripts/open-wechat-devtools.js",
+    "setup:local": "node scripts/setup-local.js",
     "test": "cd backend && npm test"
   }
 }

@@ -2,11 +2,21 @@
 
 ## 一键自动配置（推荐）
 
-在项目根目录执行：
+### 本机完整仓库（方案 B，Windows）
 
 ```bash
-npm run miniprogram:setup   # 自动写入 API 地址与开发配置
-npm run miniprogram:open    # 自动打开微信开发者工具（需本地已安装）
+npm run setup:local
+```
+
+或双击 `scripts/setup-local-windows.bat`。详见 [docs/setup-local-windows.md](../docs/setup-local-windows.md)。
+
+默认克隆到：`%USERPROFILE%\WeChatProjects\personal_web`，导入其中的 `miniprogram\` 目录。
+
+### 仅配置当前仓库
+
+```bash
+npm run miniprogram:setup   # 自动写入 API 地址
+npm run miniprogram:open    # 自动打开微信开发者工具
 ```
 
 `miniprogram:setup` 会：

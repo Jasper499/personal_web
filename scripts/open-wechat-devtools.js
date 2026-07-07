@@ -18,7 +18,10 @@ const CLI_PATHS = {
   win32: [
     'C:\\Program Files (x86)\\Tencent\\微信web开发者工具\\cli.bat',
     'C:\\Program Files\\Tencent\\微信web开发者工具\\cli.bat',
-    path.join(os.homedir(), 'AppData', 'Local', '微信开发者工具', 'cli.bat'),
+    path.join(process.env.LOCALAPPDATA || '', '微信开发者工具', 'cli.bat'),
+    path.join(process.env.USERPROFILE || '', 'AppData', 'Local', '微信开发者工具', 'cli.bat'),
+    path.join(process.env.USERPROFILE || '', 'AppData', 'Local', '微信web开发者工具', 'cli.bat'),
+    path.join(process.env.USERPROFILE || '', 'AppData', 'Roaming', '微信web开发者工具', 'cli.bat'),
   ],
   linux: [
     '/usr/bin/wechat-devtools-cli',
