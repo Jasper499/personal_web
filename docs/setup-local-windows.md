@@ -4,27 +4,31 @@
 
 ## 一键运行（推荐）
 
-### 方式 1：双击批处理
+### 方式 1：ZIP 下载（GitHub 连不上时用）
 
-1. 从 GitHub 下载或克隆本项目到任意目录
-2. 双击运行：
+若 `git clone` 报错 `Connection was reset`，**双击运行**：
 
 ```
-scripts\setup-local-windows.bat
+scripts\setup-local-zip-windows.bat
 ```
 
-### 方式 2：PowerShell
+或命令行：
 
 ```powershell
-cd 你的仓库目录
-.\scripts\setup-local-windows.ps1
+npm run setup:local:zip
 ```
 
-### 方式 3：npm 命令
+无需安装 Git，自动从 GitHub / 镜像下载 ZIP 并解压。
+
+### 方式 2：Git 克隆（网络正常时）
+
+双击 `scripts\setup-local-windows.bat` 或：
 
 ```powershell
 npm run setup:local
 ```
+
+git 失败时会**自动改用 ZIP 下载**。
 
 ## 自动完成的操作
 
@@ -37,6 +41,54 @@ npm run setup:local
 
 ```powershell
 node scripts/setup-local.js --dir D:\dev\personal_web
+```
+
+## 网络问题：git clone 失败
+
+### 错误：`Recv failure: Connection was reset`
+
+国内访问 GitHub 不稳定导致，**与项目无关**。
+
+**解决办法（任选其一）：**
+
+#### A. 一键 ZIP 安装（推荐）
+
+在能访问本仓库的前提下，先下载 ZIP 启动脚本，或从 Cursor 云端复制 `scripts` 文件夹后执行：
+
+```powershell
+npm run setup:local:zip
+```
+
+或双击 `scripts\setup-local-zip-windows.bat`
+
+#### B. 浏览器手动下载 ZIP
+
+1. 打开（可尝试镜像）：
+   - https://github.com/Jasper499/personal_web/archive/refs/heads/cursor/shop-miniprogram-mvp-383d.zip
+   - 或 https://ghproxy.net/https://github.com/Jasper499/personal_web/archive/refs/heads/cursor/shop-miniprogram-mvp-383d.zip
+2. 解压到 `C:\Users\你的用户名\WeChatProjects\personal_web`
+   - 注意：解压后若多一层 `personal_web-cursor-shop-miniprogram-mvp-383d`，把**里面文件**移到 `personal_web` 文件夹
+3. 在该目录打开 CMD，执行：
+   ```powershell
+   npm run setup
+   npm run miniprogram:setup
+   npm run miniprogram:open
+   ```
+
+#### C. 配置 Git 代理（有 VPN 时）
+
+```powershell
+git config --global http.proxy http://127.0.0.1:7890
+git config --global https.proxy http://127.0.0.1:7890
+```
+
+端口改成你的代理端口，然后再 `git clone`。
+
+取消代理：
+
+```powershell
+git config --global --unset http.proxy
+git config --global --unset https.proxy
 ```
 
 ## 前置条件

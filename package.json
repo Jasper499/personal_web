@@ -14,6 +14,7 @@
     "miniprogram:setup": "node scripts/setup-miniprogram.js",
     "miniprogram:open": "node scripts/open-wechat-devtools.js",
     "setup:local": "node scripts/setup-local.js",
+    "setup:local:zip": "node scripts/setup-local.js --use-zip",
     "test": "cd backend && npm test"
   }
 }
