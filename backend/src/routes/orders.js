@@ -3,6 +3,7 @@ const { PrismaClient } = require('@prisma/client');
 const { success, fail } = require('../utils/response');
 const { authUser, authAdmin } = require('../middleware/auth');
 const { generateOrderNo, generatePickupCode } = require('../utils/order');
+const { notifyOrderShipped, notifyPickupReady } = require('../utils/order-notify');
 
 const prisma = new PrismaClient();
 const router = express.Router();
@@ -175,6 +176,23 @@ router.get('/:id', async (req, res) => {
   });
 });
 
+router.post('/:id/confirm', async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  const order = await prisma.order.findFirst({ where: { id, userId: req.userId } });
+  if (!order) {
+    return fail(res, 404, 40400, '订单不存在');
+  }
+  if (order.status !== 'shipped') {
+    return fail(res, 400, 50002, '当前状态不可确认收货');
+  }
+
+  const updated = await prisma.order.update({
+    where: { id },
+    data: { status: 'completed', completedAt: new Date() },
+  });
+  return success(res, updated);
+});
+
 router.post('/:id/cancel', async (req, res) => {
   const id = parseInt(req.params.id, 10);
   const order = await prisma.order.findFirst({ where: { id, userId: req.userId } });
@@ -256,7 +274,10 @@ adminRouter.get('/:id', async (req, res) => {
 adminRouter.post('/:id/ship', async (req, res) => {
   const id = parseInt(req.params.id, 10);
   const { expressCompany, expressNo } = req.body;
-  const order = await prisma.order.findUnique({ where: { id } });
+  const order = await prisma.order.findUnique({
+    where: { id },
+    include: { user: true },
+  });
   if (!order || order.status !== 'paid') {
     return fail(res, 400, 50002, '订单状态不允许发货');
   }
@@ -268,19 +289,27 @@ adminRouter.post('/:id/ship', async (req, res) => {
       expressNo,
       shippedAt: new Date(),
     },
+    include: { user: true },
+  });
+  notifyOrderShipped(updated, updated.user).catch((err) => {
+    console.warn('[orders/ship] 订阅消息发送失败:', err.message);
   });
   return success(res, updated);
 });
 
 adminRouter.post('/:id/complete-pickup', async (req, res) => {
   const id = parseInt(req.params.id, 10);
-  const order = await prisma.order.findUnique({ where: { id } });
+  const order = await prisma.order.findUnique({
+    where: { id },
+    include: { user: true },
+  });
   if (!order || order.status !== 'paid' || order.deliveryType !== 'pickup') {
     return fail(res, 400, 50002, '订单状态不允许核销');
   }
   const updated = await prisma.order.update({
     where: { id },
     data: { status: 'completed', completedAt: new Date() },
+    include: { user: true },
   });
   await prisma.product.updateMany({
     where: { id: { in: (await prisma.orderItem.findMany({ where: { orderId: id } })).map((i) => i.productId) } },
@@ -293,6 +322,9 @@ adminRouter.post('/:id/complete-pickup', async (req, res) => {
       data: { salesCount: { increment: item.quantity } },
     });
   }
+  notifyPickupReady(updated, updated.user).catch((err) => {
+    console.warn('[orders/pickup] 订阅消息发送失败:', err.message);
+  });
   return success(res, updated);
 });
 

@@ -1,5 +1,5 @@
 const { request } = require('../../utils/request');
-const { mockPayOrder } = require('../../utils/pay');
+const { payOrder, getPayConfig } = require('../../utils/pay');
 
 const TABS = [
   { key: '', label: '全部' },
@@ -23,16 +23,29 @@ Page({
     activeTab: '',
     orders: [],
     statusMap: STATUS_MAP,
+    payLabel: '模拟支付',
   },
 
   onLoad(options) {
     if (options.status) {
       this.setData({ activeTab: options.status });
     }
+    this.loadPayConfig();
   },
 
   onShow() {
     this.loadOrders();
+  },
+
+  async loadPayConfig() {
+    try {
+      const config = await getPayConfig();
+      this.setData({
+        payLabel: config.mockPay === false ? '微信支付' : '模拟支付',
+      });
+    } catch {
+      this.setData({ payLabel: '模拟支付' });
+    }
   },
 
   async loadOrders() {
@@ -56,7 +69,7 @@ Page({
     const id = e.currentTarget.dataset.id;
     try {
       wx.showLoading({ title: '支付中' });
-      await mockPayOrder(id);
+      await payOrder(id);
       wx.hideLoading();
       wx.showToast({ title: '支付成功', icon: 'success' });
       this.loadOrders();

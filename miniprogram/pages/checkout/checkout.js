@@ -1,7 +1,7 @@
 const { request } = require('../../utils/request');
-const { mockPayOrder } = require('../../utils/pay');
+const { payOrder, getPayConfig } = require('../../utils/pay');
+const { requestOrderSubscribe } = require('../../utils/subscribe');
 const { track } = require('../../utils/analytics');
-const app = getApp();
 
 Page({
   data: {
@@ -15,20 +15,45 @@ Page({
     payAmount: 0,
     fromCart: false,
     submitting: false,
+    mockPay: true,
+    payLabel: '模拟支付',
   },
 
   onLoad(options) {
     const items = wx.getStorageSync('checkoutItems') || [];
     this.setData({ items, fromCart: options.fromCart === '1' });
+    this.loadPayConfig();
     this.loadAddresses();
     this.calcAmount();
+  },
+
+  onShow() {
+    this.loadAddresses();
+  },
+
+  async loadPayConfig() {
+    try {
+      const config = await getPayConfig();
+      const mockPay = config.mockPay !== false;
+      this.setData({
+        mockPay,
+        payLabel: mockPay ? '模拟支付' : '微信支付',
+      });
+    } catch {
+      this.setData({ mockPay: true, payLabel: '模拟支付' });
+    }
   },
 
   async loadAddresses() {
     try {
       const addresses = await request('/addresses');
-      const selectedAddress = addresses.find((a) => a.isDefault) || addresses[0] || null;
-      this.setData({ addresses, selectedAddress });
+      const { selectedAddress } = this.data;
+      const nextSelected =
+        (selectedAddress && addresses.find((a) => a.id === selectedAddress.id)) ||
+        addresses.find((a) => a.isDefault) ||
+        addresses[0] ||
+        null;
+      this.setData({ addresses, selectedAddress: nextSelected });
     } catch {
       this.setData({ addresses: [], selectedAddress: null });
     }
@@ -88,6 +113,7 @@ Page({
 
   async createOrder() {
     const { items, deliveryType, selectedAddress, remark, fromCart } = this.data;
+    const app = getApp();
     const user = await app.ensureLogin();
     if (!user) {
       throw new Error('登录失败，请重新编译小程序');
@@ -114,10 +140,11 @@ Page({
       wx.hideLoading();
       wx.removeStorageSync('checkoutItems');
       this.setData({ submitting: false });
+      const payHint = this.data.mockPay ? '模拟支付' : '微信支付';
       this.goOrderDetail(
         order.id,
         '订单已创建',
-        '订单已提交，请在订单详情点击「模拟支付」完成付款。'
+        `订单已提交，请在订单详情点击「${payHint}」完成付款。`
       );
     } catch (e) {
       wx.hideLoading();
@@ -133,17 +160,18 @@ Page({
   async onSubmitAndPay() {
     if (this.data.submitting || !this.validateCheckout()) return;
 
-    const { deliveryType, payAmount } = this.data;
+    const { deliveryType, payAmount, mockPay, payLabel } = this.data;
     this.setData({ submitting: true });
     wx.showLoading({ title: '提交订单' });
 
     try {
+      await requestOrderSubscribe();
       const order = await this.createOrder();
       track('begin_checkout', { orderId: order.id, payAmount });
-      wx.showLoading({ title: '模拟支付中' });
+      wx.showLoading({ title: mockPay ? '模拟支付中' : '调起支付' });
 
       try {
-        await mockPayOrder(order.id);
+        await payOrder(order.id);
         track('purchase', { orderId: order.id, payAmount });
         wx.hideLoading();
         wx.removeStorageSync('checkoutItems');
@@ -163,7 +191,7 @@ Page({
         this.goOrderDetail(
           order.id,
           '订单已创建',
-          `${payMsg}\n\n订单已生成，请在订单详情点击「模拟支付」完成付款。`
+          `${payMsg}\n\n订单已生成，请在订单详情点击「${payLabel}」完成付款。`
         );
       }
     } catch (e) {

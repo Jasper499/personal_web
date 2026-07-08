@@ -32,7 +32,7 @@
   </view>
 </view>
 
-<view class="dev-tip">
+<view class="dev-tip" wx:if="{{mockPay}}">
   开发环境说明：点击右侧「模拟支付」将自动完成下单和付款，无需真实微信支付。
 </view>
 
@@ -43,6 +43,6 @@
   </view>
   <view class="footer-actions">
     <view class="btn-outline" bindtap="onSubmitOnly">{{submitting ? '处理中' : '仅提交订单'}}</view>
-    <view class="btn-primary pay-btn" bindtap="onSubmitAndPay">{{submitting ? '处理中' : '模拟支付'}}</view>
+    <view class="btn-primary pay-btn" bindtap="onSubmitAndPay">{{submitting ? '处理中' : payLabel}}</view>
   </view>
 </view>

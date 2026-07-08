@@ -9,12 +9,14 @@ const cartRoutes = require('./routes/cart');
 const addressRoutes = require('./routes/addresses');
 const { router: orderRoutes, adminRouter: orderAdminRoutes } = require('./routes/orders');
 const payRoutes = require('./routes/pay');
+const payNotifyHandler = require('./routes/pay-notify');
 const analyticsRoutes = require('./routes/analytics');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(cors());
+app.post('/api/pay/notify', express.raw({ type: '*/*' }), payNotifyHandler);
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/admin', express.static(path.join(__dirname, '../../admin')));

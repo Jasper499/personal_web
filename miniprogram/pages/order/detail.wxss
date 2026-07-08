@@ -52,6 +52,13 @@
   display: block;
 }
 
+.express-info {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: #6C757D;
+}
+
 .addr {
   display: block;
   color: #6C757D;
@@ -122,6 +129,10 @@
 .btn-primary {
   background: #E85D4C;
   color: #fff;
+}
+
+.btn-primary.full {
+  flex: 1;
 }
 
 .loading {

@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 
 process.env.JWT_SECRET = 'test-secret';
 process.env.MOCK_WX_LOGIN = 'true';
+process.env.MOCK_PAY = 'true';
 
 let app;
 let prisma;
@@ -96,4 +97,44 @@ test('admin login', async () => {
   });
   assert.equal(res.code, 0);
   assert.ok(res.data.token);
+});
+
+test('pay config returns mock mode', async () => {
+  const res = await request('GET', '/api/pay/config');
+  assert.equal(res.code, 0);
+  assert.equal(res.data.mockPay, true);
+});
+
+test('confirm receive', async () => {
+  const user = await prisma.user.upsert({
+    where: { openid: 'confirm_user' },
+    update: {},
+    create: { openid: 'confirm_user', nickname: '收货用户' },
+  });
+  const token = jwt.sign({ userId: user.id, type: 'user' }, process.env.JWT_SECRET);
+
+  const order = await prisma.order.create({
+    data: {
+      orderNo: `TEST${Date.now()}`,
+      userId: user.id,
+      status: 'shipped',
+      totalAmount: 68,
+      freight: 0,
+      payAmount: 68,
+      deliveryType: 'express',
+      items: {
+        create: [{
+          productId: 1,
+          productName: '测试商品',
+          price: 68,
+          quantity: 1,
+          coverImage: '/uploads/demo/product-1.png',
+        }],
+      },
+    },
+  });
+
+  const res = await request('POST', `/api/orders/${order.id}/confirm`, null, token);
+  assert.equal(res.code, 0);
+  assert.equal(res.data.status, 'completed');
 });

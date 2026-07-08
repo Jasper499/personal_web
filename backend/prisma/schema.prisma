@@ -118,6 +118,8 @@ model Order {
   pickupCode      String?     @map("pickup_code")
   expressCompany  String?     @map("express_company")
   expressNo       String?     @map("express_no")
+  prepayId        String?     @map("prepay_id")
+  transactionId   String?     @map("transaction_id")
   createdAt       DateTime    @default(now()) @map("created_at")
   paidAt          DateTime?   @map("paid_at")
   shippedAt       DateTime?   @map("shipped_at")

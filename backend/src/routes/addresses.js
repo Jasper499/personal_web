@@ -16,10 +16,27 @@ router.get('/', async (req, res) => {
   return success(res, addresses);
 });
 
+const PHONE_RE = /^1\d{10}$/;
+
+function validateAddress(body) {
+  const { name, phone, province, city, district, detail } = body;
+  if (!name?.trim() || !phone?.trim() || !detail?.trim()) {
+    return '请填写完整地址信息';
+  }
+  if (!PHONE_RE.test(phone.trim())) {
+    return '请填写正确的手机号';
+  }
+  if (!province?.trim() || !city?.trim() || !district?.trim()) {
+    return '请选择省市区';
+  }
+  return null;
+}
+
 router.post('/', async (req, res) => {
   const { name, phone, province, city, district, detail, isDefault } = req.body;
-  if (!name || !phone || !detail) {
-    return fail(res, 400, 40001, '请填写完整地址信息');
+  const error = validateAddress(req.body);
+  if (error) {
+    return fail(res, 400, 40001, error);
   }
   if (isDefault) {
     await prisma.address.updateMany({ where: { userId: req.userId }, data: { isDefault: false } });
@@ -44,6 +61,10 @@ router.put('/:id', async (req, res) => {
   const existing = await prisma.address.findFirst({ where: { id, userId: req.userId } });
   if (!existing) {
     return fail(res, 404, 40400, '地址不存在');
+  }
+  const error = validateAddress({ ...existing, ...req.body });
+  if (error) {
+    return fail(res, 400, 40001, error);
   }
   if (req.body.isDefault) {
     await prisma.address.updateMany({ where: { userId: req.userId }, data: { isDefault: false } });

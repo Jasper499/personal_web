@@ -101,6 +101,34 @@ npm run miniprogram:setup
 3. 微信开发者工具勾选「不校验合法域名」
 4. 重新 **编译** 小程序
 
+## 第三阶段（支付、地址、通知）
+
+### 支付
+- 开发环境默认 **模拟支付**（`MOCK_PAY=true`）
+- 生产环境配置 `WX_MCH_ID`、`WX_PAY_KEY`、`WX_PAY_NOTIFY_URL` 后设置 `MOCK_PAY=false` 启用真实微信支付
+- 小程序自动调用 `wx.requestPayment`，支付回调由 `/api/pay/notify` 处理
+
+### 地址
+- 省市区选择器 + 微信地址一键导入
+- 地址列表支持设为默认、删除确认
+- 结算页返回后自动刷新地址
+
+### 订单
+- 待收货订单支持「确认收货」
+- 发货/取货核销后发送订阅消息（需配置模板 ID）
+
+### 订阅消息模板（可选）
+
+在 `backend/.env` 中配置：
+
+```env
+WX_TMPL_ORDER_PAID=支付成功模板ID
+WX_TMPL_ORDER_SHIPPED=发货通知模板ID
+WX_TMPL_ORDER_PICKUP=取货通知模板ID
+```
+
+配置后，结算支付前会请求用户授权订阅。
+
 Windows 方案一安装后，请保持 **API 窗口** 运行，再在微信开发者工具点 **编译**。
 
 ## API 地址变更
