@@ -12,3 +12,4 @@ dist/
 .cursor/tunnel.log
 miniprogram/project.private.config.json
 miniprogram/config/env.js
+miniprogram/config/.api-cache-cleared
