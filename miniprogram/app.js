@@ -66,10 +66,22 @@ App({
       wx.setStorageSync('token', data.token);
       this.globalData.userInfo = data.user;
       track('app_launch', { userId: data.user.id });
+      return data.user;
     } catch (e) {
       console.error('登录失败', e);
       wx.showToast({ title: '登录失败，请重新编译', icon: 'none' });
+      return null;
     }
+  },
+
+  async ensureLogin() {
+    if (!getToken()) {
+      return this.login();
+    }
+    if (!this.globalData.userInfo) {
+      return this.login();
+    }
+    return this.globalData.userInfo;
   },
 
   updateCartBadge() {

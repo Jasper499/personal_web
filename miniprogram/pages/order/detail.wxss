@@ -1,3 +1,39 @@
+.page {
+  padding-bottom: 160rpx;
+}
+
+.pay-banner {
+  background: #fff5f5;
+  border: 1rpx solid #f5c2c7;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin: 24rpx;
+}
+
+.pay-banner-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #E85D4C;
+}
+
+.pay-banner-tip {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #6C757D;
+}
+
+.pay-banner-btn {
+  margin-top: 20rpx;
+  background: #E85D4C;
+  color: #fff;
+  text-align: center;
+  padding: 20rpx 0;
+  border-radius: 44rpx;
+  font-size: 28rpx;
+}
+
 .status-card {
   text-align: center;
 }
@@ -86,4 +122,15 @@
 .btn-primary {
   background: #E85D4C;
   color: #fff;
+}
+
+.loading {
+  padding: 120rpx 24rpx;
+  text-align: center;
+  color: #6C757D;
+}
+
+.retry-btn {
+  margin: 32rpx auto 0;
+  width: 240rpx;
 }

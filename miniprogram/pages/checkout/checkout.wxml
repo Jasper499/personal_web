@@ -34,5 +34,5 @@
 
 <view class="footer">
   <text>实付：<text class="price">￥{{payAmount}}</text></text>
-  <view class="btn-primary submit-btn" bindtap="onSubmit">提交订单</view>
+  <view class="btn-primary submit-btn" bindtap="onSubmit">{{submitting ? '处理中...' : '提交并支付'}}</view>
 </view>

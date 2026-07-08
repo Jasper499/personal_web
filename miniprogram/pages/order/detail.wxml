@@ -1,4 +1,10 @@
 <view class="page" wx:if="{{order}}">
+  <view class="pay-banner" wx:if="{{order.status === 'pending'}}">
+    <text class="pay-banner-title">订单待付款</text>
+    <text class="pay-banner-tip">开发环境请点击下方按钮完成模拟支付</text>
+    <view class="pay-banner-btn" bindtap="onPay">立即模拟支付 ￥{{order.payAmount}}</view>
+  </view>
+
   <view class="card status-card">
     <text class="status">{{statusMap[order.status]}}</text>
     <text wx:if="{{order.pickupCode}}" class="pickup-code">取货码：{{order.pickupCode}}</text>
@@ -38,4 +44,9 @@
     <view class="btn-secondary" bindtap="onCancel">取消订单</view>
     <view class="btn-primary" bindtap="onPay">模拟支付</view>
   </view>
+</view>
+
+<view class="loading" wx:else>
+  <text>{{loading ? '加载订单中...' : '订单不存在或加载失败'}}</text>
+  <view class="btn-primary retry-btn" wx:if="{{!loading}}" bindtap="loadOrder">重试</view>
 </view>
