@@ -61,6 +61,19 @@ Page({
     this.setData({ remark: e.detail.value });
   },
 
+  validateCheckout() {
+    const { items, deliveryType, selectedAddress } = this.data;
+    if (!items.length) {
+      wx.showToast({ title: '没有可结算商品', icon: 'none' });
+      return false;
+    }
+    if (deliveryType === 'express' && !selectedAddress) {
+      wx.showToast({ title: '请选择收货地址', icon: 'none' });
+      return false;
+    }
+    return true;
+  },
+
   goOrderDetail(orderId, title, content) {
     wx.showModal({
       title,
@@ -73,39 +86,59 @@ Page({
     });
   },
 
-  async onSubmit() {
-    if (this.data.submitting) return;
-
-    const { items, deliveryType, selectedAddress, remark, fromCart, payAmount } = this.data;
-    if (!items.length) {
-      wx.showToast({ title: '没有可结算商品', icon: 'none' });
-      return;
+  async createOrder() {
+    const { items, deliveryType, selectedAddress, remark, fromCart } = this.data;
+    const user = await app.ensureLogin();
+    if (!user) {
+      throw new Error('登录失败，请重新编译小程序');
     }
-    if (deliveryType === 'express' && !selectedAddress) {
-      wx.showToast({ title: '请选择收货地址', icon: 'none' });
-      return;
-    }
+    return request('/orders', {
+      method: 'POST',
+      data: {
+        items,
+        deliveryType,
+        addressId: selectedAddress?.id,
+        remark,
+        fromCart,
+      },
+    });
+  },
 
+  async onSubmitOnly() {
+    if (this.data.submitting || !this.validateCheckout()) return;
+
+    this.setData({ submitting: true });
+    wx.showLoading({ title: '提交订单' });
+    try {
+      const order = await this.createOrder();
+      wx.hideLoading();
+      wx.removeStorageSync('checkoutItems');
+      this.setData({ submitting: false });
+      this.goOrderDetail(
+        order.id,
+        '订单已创建',
+        '订单已提交，请在订单详情点击「模拟支付」完成付款。'
+      );
+    } catch (e) {
+      wx.hideLoading();
+      this.setData({ submitting: false });
+      wx.showModal({
+        title: '下单失败',
+        content: (e && e.message) || '提交失败，请重试',
+        showCancel: false,
+      });
+    }
+  },
+
+  async onSubmitAndPay() {
+    if (this.data.submitting || !this.validateCheckout()) return;
+
+    const { deliveryType, payAmount } = this.data;
     this.setData({ submitting: true });
     wx.showLoading({ title: '提交订单' });
 
     try {
-      const user = await app.ensureLogin();
-      if (!user) {
-        throw new Error('登录失败，请重新编译小程序');
-      }
-
-      const order = await request('/orders', {
-        method: 'POST',
-        data: {
-          items,
-          deliveryType,
-          addressId: selectedAddress?.id,
-          remark,
-          fromCart,
-        },
-      });
-
+      const order = await this.createOrder();
       track('begin_checkout', { orderId: order.id, payAmount });
       wx.showLoading({ title: '模拟支付中' });
 
