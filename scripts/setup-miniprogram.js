@@ -80,11 +80,13 @@ function collectCandidates(port) {
   const loopback = `http://127.0.0.1:${port}`;
   const lanCandidates = getLanCandidates(port);
 
-  // 本机开发优先 localhost，避免仓库内过期云端隧道地址导致 404
+  // 本机开发优先 127.0.0.1（微信开发者工具模拟器对 localhost 兼容性更差）
   if (!process.env.CURSOR_AGENT) {
-    add(localhost);
     add(loopback);
-    lanCandidates.forEach(add);
+    add(localhost);
+    if (process.env.MINIPROGRAM_INCLUDE_LAN === '1') {
+      lanCandidates.forEach(add);
+    }
   }
 
   if (fs.existsSync(PREVIEW_FILE)) {
@@ -153,6 +155,13 @@ module.exports = {
     condition: {},
   };
   fs.writeFileSync(PRIVATE_CONFIG, JSON.stringify(privateConfig, null, 2) + '\n');
+
+  // 清除小程序里可能缓存的错误 API 地址（如过期隧道）
+  const clearCacheHint = path.join(MP, 'config/.api-cache-cleared');
+  fs.writeFileSync(
+    clearCacheHint,
+    `${Date.now()}\n请在微信开发者工具清缓存后重新编译\n`
+  );
 
   console.log('[miniprogram:setup] 配置完成');
   console.log(`  API 地址: ${apiBase}`);

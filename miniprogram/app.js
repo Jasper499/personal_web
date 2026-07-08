@@ -1,4 +1,4 @@
-const { request, getToken, checkHealth, getApiRoot, normalizeApiBase } = require('./utils/request');
+const { request, getToken, checkHealth, getApiRoot, normalizeApiBase, resolveWorkingApiBase } = require('./utils/request');
 const { track } = require('./utils/analytics');
 
 let env;
@@ -18,6 +18,11 @@ App({
   },
 
   async onLaunch() {
+    const cached = wx.getStorageSync('last_working_api_base');
+    if (/trycloudflare\.com|loca\.lt/i.test(cached || '')) {
+      wx.removeStorageSync('last_working_api_base');
+    }
+
     console.log('[匠心小铺] apiBase =', this.globalData.apiBase);
     console.log('[匠心小铺] apiBaseCandidates =', this.globalData.apiBaseCandidates);
     await this.ensureApiConnection();

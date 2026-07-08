@@ -1,4 +1,4 @@
-const { request } = require('../../utils/request');
+const { request, resolveWorkingApiBase } = require('../../utils/request');
 const { track } = require('../../utils/analytics');
 const app = getApp();
 
@@ -10,16 +10,20 @@ Page({
     keyword: '',
     loading: true,
     loadError: '',
+    apiBase: '',
   },
 
   onShow() {
+    this.setData({ apiBase: getApp().globalData.apiBase || '' });
     this.loadData();
     app.updateCartBadge();
   },
 
   async loadData() {
-    this.setData({ loading: true, loadError: '' });
+    this.setData({ loading: true, loadError: '', apiBase: getApp().globalData.apiBase || '' });
     try {
+      await resolveWorkingApiBase(true);
+      this.setData({ apiBase: getApp().globalData.apiBase || '' });
       const [banners, categories, productData] = await Promise.all([
         request('/banners'),
         request('/categories'),
@@ -33,9 +37,10 @@ Page({
         loadError: '',
       });
     } catch (e) {
+      const msg = (e && e.message) || '数据加载失败';
       this.setData({
         loading: false,
-        loadError: '数据加载失败，请确认已运行 npm run dev 后点击重试',
+        loadError: `${msg}\n\n当前 API: ${getApp().globalData.apiBase || '未设置'}\n请确认 npm run dev 已运行，然后点重试`,
       });
       console.error(e);
     }

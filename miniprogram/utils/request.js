@@ -1,7 +1,19 @@
 const app = getApp();
 
-const DEFAULT_API_BASE = 'http://localhost:3000/api';
+const DEFAULT_API_BASE = 'http://127.0.0.1:3000/api';
+const DEV_FALLBACK_BASES = [
+  'http://127.0.0.1:3000/api',
+  'http://localhost:3000/api',
+];
 let resolvingApiBasePromise = null;
+
+function isBadCachedBase(base) {
+  return /trycloudflare\.com|loca\.lt/i.test(base || '');
+}
+
+function getDevFallbackBases() {
+  return DEV_FALLBACK_BASES.map((base) => normalizeApiBase(base));
+}
 
 function normalizeApiBase(base) {
   let normalized = (base || DEFAULT_API_BASE).trim().replace(/\/$/, '');
@@ -27,13 +39,19 @@ function getApiCandidates() {
   const seen = new Set();
   const result = [];
 
-  [lastWorking, app.globalData.apiBase, ...globalCandidates].forEach((base) => {
-    if (!base) return;
+  function add(base) {
+    if (!base || isBadCachedBase(base)) return;
     const normalized = normalizeApiBase(base);
     if (seen.has(normalized)) return;
     seen.add(normalized);
     result.push(normalized);
-  });
+  }
+
+  getDevFallbackBases().forEach(add);
+  add(lastWorking);
+  add(app.globalData.apiBase);
+  globalCandidates.forEach(add);
+  getDevFallbackBases().forEach(add);
 
   if (result.length === 0) {
     result.push(DEFAULT_API_BASE);

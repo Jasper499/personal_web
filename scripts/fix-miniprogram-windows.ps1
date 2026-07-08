@@ -28,7 +28,8 @@ if (-not $healthOk) {
 Write-Host "[2/5] 修复演示商品数据..."
 npm run db:reseed
 
-Write-Host "[3/5] 写入本机 API 配置..."
+Write-Host "[3/5] 写入本机 API 配置（优先 127.0.0.1）..."
+$env:MINIPROGRAM_API_BASE = "http://127.0.0.1:3000"
 npm run miniprogram:setup
 
 Write-Host "[4/5] 运行诊断..."
