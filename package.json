@@ -13,6 +13,7 @@
     "preview:tunnel": "node scripts/start-tunnel.js",
     "miniprogram:setup": "node scripts/setup-miniprogram.js",
     "miniprogram:doctor": "node scripts/diagnose-miniprogram.js",
+    "miniprogram:verify": "node scripts/verify-miniprogram-source.js",
     "miniprogram:open": "node scripts/open-wechat-devtools.js",
     "fix:miniprogram": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/fix-miniprogram-windows.ps1",
     "db:reseed": "cd backend && npm run db:seed",

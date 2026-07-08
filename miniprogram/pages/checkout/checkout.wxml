@@ -1,3 +1,5 @@
+<view class="version-banner">代码版本: 2026.07.08 · 含模拟支付按钮</view>
+
 <view class="card">
   <radio-group bindchange="onDeliveryChange">
     <label class="delivery-opt">
