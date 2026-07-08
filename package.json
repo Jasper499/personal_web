@@ -16,7 +16,7 @@
     "miniprogram:verify": "node scripts/verify-miniprogram-source.js",
     "miniprogram:open": "node scripts/open-wechat-devtools.js",
     "fix:miniprogram": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/fix-miniprogram-windows.ps1",
-    "db:reseed": "node scripts/generate-demo-assets.js && cd backend && npm run db:seed",
+    "db:reseed": "node scripts/generate-demo-assets.js && node scripts/generate-icons.js && cd backend && npm run db:seed",
     "setup:local": "node scripts/setup-local.js",
     "setup:local:zip": "node scripts/setup-local.js --use-zip",
     "test": "cd backend && npm test"

@@ -85,11 +85,21 @@ npm run miniprogram:open    # 自动打开微信开发者工具
 
 ```bash
 npm run dev
-npm run db:reseed          # 生成演示图 + 重置种子数据
+npm run db:reseed          # 下载真实演示图 + 重置种子数据 + 刷新 TabBar 图标
 npm run miniprogram:setup
 ```
 
 微信开发者工具中 **编译** 即可看到新 UI 与商品图。
+
+### 图片显示为色块/网格？
+
+演示商品图由 `npm run db:reseed` 从网络下载真实照片到 `backend/uploads/demo/`。若未执行或下载失败，会显示纯色占位图。
+
+请确认：
+1. 已执行 `npm run db:reseed`（需联网）
+2. `npm run dev` 已启动（图片由 `http://127.0.0.1:3000/uploads/demo/` 提供）
+3. 微信开发者工具勾选「不校验合法域名」
+4. 重新 **编译** 小程序
 
 Windows 方案一安装后，请保持 **API 窗口** 运行，再在微信开发者工具点 **编译**。
 

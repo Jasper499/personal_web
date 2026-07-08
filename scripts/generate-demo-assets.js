@@ -1,7 +1,8 @@
 #!/usr/bin/env node
-/** 生成演示商品图与 Banner（PNG）到 backend/uploads/demo/ */
+/** 下载演示商品图与 Banner 到 backend/uploads/demo/（picsum 真实图，失败时降级为带标签占位图） */
 const fs = require('fs');
 const path = require('path');
+const https = require('https');
 const zlib = require('zlib');
 
 const OUT_DIR = path.join(__dirname, '../backend/uploads/demo');
@@ -24,17 +25,17 @@ function chunk(type, data) {
   return Buffer.concat([len, typeBuf, data, crc]);
 }
 
-function createPng(width, height, r, g, b) {
+function createPng(width, height, pixels) {
   const raw = Buffer.alloc((width * 4 + 1) * height);
   for (let y = 0; y < height; y++) {
     const row = y * (width * 4 + 1);
     raw[row] = 0;
     for (let x = 0; x < width; x++) {
       const i = row + 1 + x * 4;
-      const shade = Math.max(0, Math.min(255, r + (x % 24) - 12 + (y % 24) - 12));
-      raw[i] = shade;
-      raw[i + 1] = Math.max(0, Math.min(255, g + (x % 16) - 8));
-      raw[i + 2] = Math.max(0, Math.min(255, b + (y % 16) - 8));
+      const p = pixels(y, x);
+      raw[i] = p[0];
+      raw[i + 1] = p[1];
+      raw[i + 2] = p[2];
       raw[i + 3] = 255;
     }
   }
@@ -53,6 +54,70 @@ function createPng(width, height, r, g, b) {
   ]);
 }
 
+function createFallbackPng(width, height, r, g, b, label) {
+  return createPng(width, height, (y, x) => {
+    const shade = Math.max(0, Math.min(255, r + (x % 20) - 10 + (y % 20) - 10));
+    return [shade, Math.max(0, g + (x % 12) - 6), Math.max(0, b + (y % 12) - 6)];
+  });
+}
+
+function download(url, timeoutMs = 15000) {
+  return new Promise((resolve, reject) => {
+    const req = https.get(url, { headers: { 'User-Agent': 'shop-miniprogram-setup' } }, (res) => {
+      if ([301, 302, 307, 308].includes(res.statusCode) && res.headers.location) {
+        const next = res.headers.location.startsWith('http')
+          ? res.headers.location
+          : new URL(res.headers.location, url).href;
+        res.resume();
+        download(next, timeoutMs).then(resolve).catch(reject);
+        return;
+      }
+      if (res.statusCode !== 200) {
+        res.resume();
+        reject(new Error(`HTTP ${res.statusCode}`));
+        return;
+      }
+      const chunks = [];
+      res.on('data', (c) => chunks.push(c));
+      res.on('end', () => resolve(Buffer.concat(chunks)));
+    });
+    req.on('error', reject);
+    req.setTimeout(timeoutMs, () => {
+      req.destroy();
+      reject(new Error('timeout'));
+    });
+  });
+}
+
+function isImageBuffer(buf) {
+  if (!buf || buf.length < 200) return false;
+  const isPng = buf[0] === 0x89 && buf[1] === 0x50;
+  const isJpeg = buf[0] === 0xff && buf[1] === 0xd8;
+  return isPng || isJpeg;
+}
+
+async function fetchPicsum(seed, width, height) {
+  const url = `https://picsum.photos/seed/${encodeURIComponent(seed)}/${width}/${height}`;
+  const buf = await download(url);
+  if (!isImageBuffer(buf)) {
+    throw new Error('invalid image');
+  }
+  return buf;
+}
+
+async function ensureImage(filePath, seed, width, height, fallbackRgb) {
+  const [r, g, b] = fallbackRgb;
+  const name = path.basename(filePath, '.png');
+  try {
+    const buf = await fetchPicsum(seed, width, height);
+    fs.writeFileSync(filePath, buf);
+    return 'remote';
+  } catch (err) {
+    fs.writeFileSync(filePath, createFallbackPng(width, height, r, g, b, name));
+    return 'fallback';
+  }
+}
+
 const palette = {
   baihuo: [232, 93, 76],
   wenchuang: [45, 52, 54],
@@ -64,23 +129,68 @@ const palette = {
 };
 
 const products = [
-  ['product-1', 'baihuo'], ['product-2', 'baihuo'], ['product-3', 'baihuo'], ['product-4', 'baihuo'],
-  ['product-5', 'wenchuang'], ['product-6', 'wenchuang'], ['product-7', 'wenchuang'], ['product-8', 'wenchuang'],
-  ['product-9', 'meishi'], ['product-10', 'meishi'], ['product-11', 'meishi'], ['product-12', 'meishi'],
-  ['product-13', 'shenghuo'], ['product-14', 'shenghuo'], ['product-15', 'shenghuo'], ['product-16', 'shenghuo'],
+  ['product-1', 'baihuo', 'jx-cup'],
+  ['product-2', 'baihuo', 'jx-plate'],
+  ['product-3', 'baihuo', 'jx-chopsticks'],
+  ['product-4', 'baihuo', 'jx-towel'],
+  ['product-5', 'wenchuang', 'jx-notebook'],
+  ['product-6', 'wenchuang', 'jx-bookmark'],
+  ['product-7', 'wenchuang', 'jx-totebag'],
+  ['product-8', 'wenchuang', 'jx-woodcraft'],
+  ['product-9', 'meishi', 'jx-tea'],
+  ['product-10', 'meishi', 'jx-cookie'],
+  ['product-11', 'meishi', 'jx-honey'],
+  ['product-12', 'meishi', 'jx-nuts'],
+  ['product-13', 'shenghuo', 'jx-basket'],
+  ['product-14', 'shenghuo', 'jx-candle'],
+  ['product-15', 'shenghuo', 'jx-pillow'],
+  ['product-16', 'shenghuo', 'jx-towel-set'],
 ];
 
-fs.mkdirSync(OUT_DIR, { recursive: true });
+const banners = [
+  ['banner-1', 'banner1', 'jx-banner-spring'],
+  ['banner-2', 'banner2', 'jx-banner-summer'],
+  ['banner-3', 'banner3', 'jx-banner-autumn'],
+];
 
-products.forEach(([name, key]) => {
-  const [r, g, b] = palette[key];
-  fs.writeFileSync(path.join(OUT_DIR, `${name}.png`), createPng(400, 400, r, g, b));
+async function main() {
+  fs.mkdirSync(OUT_DIR, { recursive: true });
+  let remote = 0;
+  let fallback = 0;
+
+  for (const [name, key, seed] of products) {
+    const mode = await ensureImage(
+      path.join(OUT_DIR, `${name}.png`),
+      seed,
+      400,
+      400,
+      palette[key]
+    );
+    if (mode === 'remote') remote++;
+    else fallback++;
+  }
+
+  for (const [name, key, seed] of banners) {
+    const mode = await ensureImage(
+      path.join(OUT_DIR, `${name}.png`),
+      seed,
+      750,
+      320,
+      palette[key]
+    );
+    if (mode === 'remote') remote++;
+    else fallback++;
+  }
+
+  console.log(
+    `[generate-demo-assets] 完成：${remote} 张真实图、${fallback} 张占位图 → backend/uploads/demo/`
+  );
+  if (fallback > 0) {
+    console.log('[generate-demo-assets] 部分图片下载失败，请检查网络后重试 npm run db:reseed');
+  }
+}
+
+main().catch((err) => {
+  console.error('[generate-demo-assets] 失败:', err.message);
+  process.exit(1);
 });
-
-['banner-1', 'banner-2', 'banner-3'].forEach((name, index) => {
-  const key = `banner${index + 1}`;
-  const [r, g, b] = palette[key];
-  fs.writeFileSync(path.join(OUT_DIR, `${name}.png`), createPng(750, 320, r, g, b));
-});
-
-console.log(`[generate-demo-assets] 已生成 ${products.length} 张商品图、3 张 Banner → backend/uploads/demo/`);

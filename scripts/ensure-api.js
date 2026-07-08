@@ -84,10 +84,8 @@ function setup() {
       log('演示数据检查跳过（可手动执行 npm run db:reseed）');
     }
   }
-  if (!fs.existsSync(path.join(ROOT, 'miniprogram/assets/icons/home.png'))) {
-    log('生成小程序 TabBar 图标...');
-    execSync('node scripts/generate-icons.js', { cwd: ROOT, stdio: 'inherit' });
-  }
+  log('生成小程序 TabBar 图标...');
+  execSync('node scripts/generate-icons.js', { cwd: ROOT, stdio: 'inherit' });
   const demoDir = path.join(BACKEND, 'uploads', 'demo');
   if (!fs.existsSync(path.join(demoDir, 'product-1.png'))) {
     log('生成演示商品图与 Banner...');
