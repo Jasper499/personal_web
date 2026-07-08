@@ -1,6 +1,5 @@
 const { request, resolveWorkingApiBase } = require('../../utils/request');
 const { track } = require('../../utils/analytics');
-const app = getApp();
 
 Page({
   data: {
@@ -14,13 +13,18 @@ Page({
   },
 
   onShow() {
-    this.setData({ apiBase: getApp().globalData.apiBase || '' });
+    const app = getApp();
+    this.setData({ apiBase: (app && app.globalData && app.globalData.apiBase) || '' });
     this.loadData();
-    app.updateCartBadge();
+    if (app && app.updateCartBadge) {
+      app.updateCartBadge();
+    }
   },
 
   async loadData() {
-    this.setData({ loading: true, loadError: '', apiBase: getApp().globalData.apiBase || '' });
+    const app = getApp();
+    const apiBase = (app && app.globalData && app.globalData.apiBase) || '';
+    this.setData({ loading: true, loadError: '', apiBase });
     try {
       await resolveWorkingApiBase(true);
       this.setData({ apiBase: getApp().globalData.apiBase || '' });
@@ -37,10 +41,12 @@ Page({
         loadError: '',
       });
     } catch (e) {
+      const app = getApp();
+      const apiBase = (app && app.globalData && app.globalData.apiBase) || '未设置';
       const msg = (e && e.message) || '数据加载失败';
       this.setData({
         loading: false,
-        loadError: `${msg}\n\n当前 API: ${getApp().globalData.apiBase || '未设置'}\n请确认 npm run dev 已运行，然后点重试`,
+        loadError: `${msg}\n\n当前 API: ${apiBase}\n请确认 npm run dev 已运行，然后点重试`,
       });
       console.error(e);
     }

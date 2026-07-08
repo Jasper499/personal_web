@@ -1,11 +1,22 @@
-const app = getApp();
-
 const DEFAULT_API_BASE = 'http://127.0.0.1:3000/api';
 const DEV_FALLBACK_BASES = [
   'http://127.0.0.1:3000/api',
   'http://localhost:3000/api',
 ];
 let resolvingApiBasePromise = null;
+
+function getAppInstance() {
+  try {
+    return getApp();
+  } catch {
+    return null;
+  }
+}
+
+function getGlobalData() {
+  const app = getAppInstance();
+  return (app && app.globalData) || {};
+}
 
 function isBadCachedBase(base) {
   return /trycloudflare\.com|loca\.lt/i.test(base || '');
@@ -24,17 +35,18 @@ function normalizeApiBase(base) {
 }
 
 function getApiRoot() {
-  return normalizeApiBase(app.globalData.apiBase).replace(/\/api$/, '');
+  return normalizeApiBase(getGlobalData().apiBase).replace(/\/api$/, '');
 }
 
 function buildUrl(path) {
-  const base = normalizeApiBase(app.globalData.apiBase);
+  const base = normalizeApiBase(getGlobalData().apiBase);
   const suffix = path.startsWith('/') ? path : `/${path}`;
   return `${base}${suffix}`;
 }
 
 function getApiCandidates() {
-  const globalCandidates = app.globalData.apiBaseCandidates || [];
+  const globalData = getGlobalData();
+  const globalCandidates = globalData.apiBaseCandidates || [];
   const lastWorking = wx.getStorageSync('last_working_api_base');
   const seen = new Set();
   const result = [];
@@ -49,7 +61,7 @@ function getApiCandidates() {
 
   getDevFallbackBases().forEach(add);
   add(lastWorking);
-  add(app.globalData.apiBase);
+  add(globalData.apiBase);
   globalCandidates.forEach(add);
   getDevFallbackBases().forEach(add);
 
@@ -66,7 +78,10 @@ function getToken() {
 
 function updateActiveApiBase(base) {
   const normalized = normalizeApiBase(base);
-  app.globalData.apiBase = normalized;
+  const app = getAppInstance();
+  if (app && app.globalData) {
+    app.globalData.apiBase = normalized;
+  }
   wx.setStorageSync('last_working_api_base', normalized);
 }
 
@@ -109,7 +124,10 @@ function requestOnce(base, path, options = {}) {
           updateActiveApiBase(urlBase);
           resolve(res.data.data);
         } else if (res.data.code === 40100) {
-          app.login();
+          const app = getAppInstance();
+          if (app && typeof app.login === 'function') {
+            app.login();
+          }
           reject({ error: new Error(res.data.message), response: res, urlBase });
         } else {
           reject({ error: new Error(res.data.message), response: res, urlBase });
@@ -129,16 +147,21 @@ async function resolveWorkingApiBase(force = false) {
   }
 
   resolvingApiBasePromise = (async () => {
+    const app = getAppInstance();
     const candidates = getApiCandidates();
     for (const candidate of candidates) {
-      const previous = app.globalData.apiBase;
-      app.globalData.apiBase = candidate;
+      const previous = getGlobalData().apiBase;
+      if (app && app.globalData) {
+        app.globalData.apiBase = candidate;
+      }
       try {
         await checkHealth();
         updateActiveApiBase(candidate);
         return candidate;
       } catch {
-        app.globalData.apiBase = previous;
+        if (app && app.globalData) {
+          app.globalData.apiBase = previous;
+        }
       }
     }
     throw new Error('没有可用的 API 地址');
