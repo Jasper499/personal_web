@@ -1,4 +1,5 @@
 const { request } = require('../../utils/request');
+const { mapProductImages } = require('../../utils/media');
 const { track } = require('../../utils/analytics');
 
 const HISTORY_KEY = 'search_history';
@@ -28,7 +29,7 @@ Page({
     this.setData({ history });
     track('search', { keyword });
     const data = await request(`/products?keyword=${encodeURIComponent(keyword)}`);
-    this.setData({ products: data.list });
+    this.setData({ products: data.list.map(mapProductImages) });
   },
 
   onHistoryTap(e) {

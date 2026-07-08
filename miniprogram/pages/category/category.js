@@ -1,5 +1,5 @@
 const { request } = require('../../utils/request');
-const app = getApp();
+const { mapProductImages } = require('../../utils/media');
 
 Page({
   data: {
@@ -17,7 +17,8 @@ Page({
       this.setData({ activeId: selectedId });
     }
     this.loadCategories();
-    app.updateCartBadge();
+    const app = getApp();
+    if (app && app.updateCartBadge) app.updateCartBadge();
   },
 
   async loadCategories() {
@@ -38,7 +39,8 @@ Page({
       const data = await request(
         `/products?categoryId=${this.data.activeId}&page=${page}&pageSize=10`
       );
-      const products = reset ? data.list : [...this.data.products, ...data.list];
+      const mapped = data.list.map(mapProductImages);
+      const products = reset ? mapped : [...this.data.products, ...mapped];
       this.setData({
         products,
         page: page + 1,

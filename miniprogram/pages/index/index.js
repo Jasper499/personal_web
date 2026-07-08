@@ -1,4 +1,5 @@
 const { request, resolveWorkingApiBase } = require('../../utils/request');
+const { mapProductImages, resolveImageUrl } = require('../../utils/media');
 const { track } = require('../../utils/analytics');
 
 Page({
@@ -31,12 +32,12 @@ Page({
       const [banners, categories, productData] = await Promise.all([
         request('/banners'),
         request('/categories'),
-        request('/products?sort=sales&pageSize=6'),
+        request('/products?sort=sales&pageSize=8'),
       ]);
       this.setData({
-        banners,
+        banners: banners.map((b) => ({ ...b, imageUrl: resolveImageUrl(b.imageUrl) })),
         categories: categories.slice(0, 8),
-        products: productData.list,
+        products: productData.list.map(mapProductImages),
         loading: false,
         loadError: '',
       });

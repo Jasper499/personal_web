@@ -1,6 +1,6 @@
 const { request } = require('../../utils/request');
+const { mapProductImages } = require('../../utils/media');
 const { track } = require('../../utils/analytics');
-const app = getApp();
 
 Page({
   data: {
@@ -17,16 +17,10 @@ Page({
   },
 
   async loadProduct() {
-    const product = await request(`/products/${this.productId}`);
+    const product = mapProductImages(await request(`/products/${this.productId}`));
     const selectedSku = product.skus?.length ? product.skus[0] : null;
     this.setData({ product, selectedSku });
     track('product_view', { productId: product.id });
-  },
-
-  get displayPrice() {
-    const { product, selectedSku } = this.data;
-    if (!product) return 0;
-    return selectedSku ? selectedSku.price : product.price;
   },
 
   onSkuTap(e) {
@@ -53,11 +47,12 @@ Page({
       skuId: selectedSku?.id || null,
       quantity,
     };
+    const app = getApp();
     if (action === 'cart') {
       await request('/cart', { method: 'POST', data: payload });
       track('add_to_cart', payload);
       wx.showToast({ title: '已加入购物车' });
-      app.updateCartBadge();
+      if (app && app.updateCartBadge) app.updateCartBadge();
       this.setData({ showSku: false });
     } else {
       wx.setStorageSync('checkoutItems', [payload]);

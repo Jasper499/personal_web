@@ -88,6 +88,11 @@ function setup() {
     log('生成小程序 TabBar 图标...');
     execSync('node scripts/generate-icons.js', { cwd: ROOT, stdio: 'inherit' });
   }
+  const demoDir = path.join(BACKEND, 'uploads', 'demo');
+  if (!fs.existsSync(path.join(demoDir, 'product-1.png'))) {
+    log('生成演示商品图与 Banner...');
+    execSync('node scripts/generate-demo-assets.js', { cwd: ROOT, stdio: 'inherit' });
+  }
 }
 
 function checkHealth(timeoutMs = 2000) {

@@ -33,14 +33,20 @@ async function main() {
       }
     }
 
+    const demoProductCount = await prisma.product.count({
+      where: { id: { lte: 16 } },
+    });
     const inactiveDemoCount = await prisma.product.count({
-      where: { id: { lte: 6 }, isActive: false },
+      where: { id: { lte: 16 }, isActive: false },
     });
 
-    if (emptyCategories.length > 0 || inactiveDemoCount > 0) {
+    if (emptyCategories.length > 0 || inactiveDemoCount > 0 || demoProductCount < 16) {
       console.log('[ensure-demo-data] 检测到演示数据异常，正在修复...');
       if (emptyCategories.length > 0) {
         console.log(`  空分类: ${emptyCategories.join('、')}`);
+      }
+      if (demoProductCount < 16) {
+        console.log(`  演示商品不足: ${demoProductCount}/16`);
       }
       if (inactiveDemoCount > 0) {
         console.log(`  下架演示商品: ${inactiveDemoCount} 个`);

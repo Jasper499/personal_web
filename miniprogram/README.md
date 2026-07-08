@@ -73,6 +73,24 @@ npm run miniprogram:open    # 自动打开微信开发者工具
    - 或先执行 `npm run preview:tunnel` 再 `npm run miniprogram:setup`
 | 页面简陋，与设计稿差距大 | 当前为 **MVP 线框版**，非最终高保真 UI | 见 `docs/03-design/` 设计文档 |
 
+## 第二阶段（内容与 UI）
+
+第二阶段已完成以下内容：
+
+1. **演示数据**：16 个商品（每分类 4 个）+ 3 张 Banner，图片使用本地 `/uploads/demo/` 路径
+2. **UI 优化**：首页、商品详情、购物车、个人中心按设计规范升级
+3. **管理后台**：支持新增商品、Banner 管理（`http://localhost:3000/admin/`）
+
+更新到最新代码后执行：
+
+```bash
+npm run dev
+npm run db:reseed          # 生成演示图 + 重置种子数据
+npm run miniprogram:setup
+```
+
+微信开发者工具中 **编译** 即可看到新 UI 与商品图。
+
 Windows 方案一安装后，请保持 **API 窗口** 运行，再在微信开发者工具点 **编译**。
 
 ## API 地址变更

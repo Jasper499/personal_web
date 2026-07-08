@@ -1,6 +1,6 @@
 const { request } = require('../../utils/request');
+const { mapProductImages } = require('../../utils/media');
 const { track } = require('../../utils/analytics');
-const app = getApp();
 
 Page({
   data: {
@@ -12,17 +12,22 @@ Page({
 
   onShow() {
     this.loadCart();
-    app.updateCartBadge();
+    const app = getApp();
+    if (app && app.updateCartBadge) app.updateCartBadge();
   },
 
   async loadCart() {
     const data = await request('/cart');
-    const selectedIds = data.list.filter((i) => i.available).map((i) => i.id);
+    const list = data.list.map((item) => ({
+      ...item,
+      product: mapProductImages(item.product),
+    }));
+    const selectedIds = list.filter((i) => i.available).map((i) => i.id);
     this.setData({
-      list: data.list,
+      list,
       totalAmount: data.totalAmount,
       selectedIds,
-      allSelected: selectedIds.length === data.list.filter((i) => i.available).length,
+      allSelected: selectedIds.length === list.filter((i) => i.available).length,
     });
   },
 

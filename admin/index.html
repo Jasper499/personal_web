@@ -9,22 +9,36 @@
     body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; }
     .login-wrap { max-width: 400px; margin: 120px auto; background: #fff; padding: 32px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,.08); }
     h1 { color: #E85D4C; margin-bottom: 24px; font-size: 24px; }
-    input { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #ddd; border-radius: 8px; }
-    button { width: 100%; padding: 12px; background: #E85D4C; color: #fff; border: none; border-radius: 8px; cursor: pointer; }
+    input, select, textarea { width: 100%; padding: 12px; margin-bottom: 16px; border: 1px solid #ddd; border-radius: 8px; font-size: 14px; }
+    textarea { min-height: 80px; resize: vertical; }
+    button { padding: 12px 20px; background: #E85D4C; color: #fff; border: none; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    button:hover { opacity: 0.9; }
     .layout { display: flex; min-height: 100vh; }
-    .sidebar { width: 220px; background: #2D3436; color: #fff; padding: 24px 0; }
+    .sidebar { width: 220px; background: #2D3436; color: #fff; padding: 24px 0; flex-shrink: 0; }
     .sidebar h2 { padding: 0 24px 24px; font-size: 18px; color: #E85D4C; }
     .sidebar a { display: block; padding: 12px 24px; color: #ccc; text-decoration: none; cursor: pointer; }
     .sidebar a.active, .sidebar a:hover { background: #3d4446; color: #fff; }
-    .main { flex: 1; padding: 24px; }
+    .main { flex: 1; padding: 24px; overflow-x: auto; }
     .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
     .stat-card { background: #fff; padding: 24px; border-radius: 12px; }
     .stat-card .num { font-size: 32px; font-weight: 600; color: #E85D4C; }
     table { width: 100%; background: #fff; border-radius: 12px; border-collapse: collapse; overflow: hidden; }
-    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #eee; }
+    th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
     th { background: #fafafa; }
     .tag { padding: 4px 8px; border-radius: 4px; font-size: 12px; background: #ffe8e5; color: #E85D4C; }
+    .tag.off { background: #eee; color: #999; }
     .btn-sm { padding: 6px 12px; font-size: 12px; border: 1px solid #E85D4C; color: #E85D4C; background: #fff; border-radius: 6px; cursor: pointer; margin-right: 8px; }
+    .btn-sm.danger { border-color: #D63031; color: #D63031; }
+    .panel { background: #fff; padding: 24px; border-radius: 12px; margin-bottom: 24px; }
+    .panel h3 { margin-bottom: 16px; font-size: 16px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .form-row.full { grid-template-columns: 1fr; }
+    .form-group label { display: block; font-size: 13px; color: #666; margin-bottom: 6px; }
+    .form-group input, .form-group select, .form-group textarea { margin-bottom: 0; }
+    .thumb { width: 48px; height: 48px; object-fit: cover; border-radius: 6px; }
+    .banner-thumb { width: 120px; height: 52px; object-fit: cover; border-radius: 6px; }
+    .hint { font-size: 12px; color: #999; margin-top: -8px; margin-bottom: 12px; }
+    .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
     .hidden { display: none; }
   </style>
 </head>
@@ -34,16 +48,17 @@
       <h1>匠心小铺管理后台</h1>
       <input v-model="username" placeholder="用户名" />
       <input v-model="password" type="password" placeholder="密码" />
-      <button @click="login">登录</button>
+      <button @click="login" style="width:100%">登录</button>
       <p style="margin-top:16px;color:#999;font-size:14px;">默认账号：admin / admin123</p>
     </div>
 
     <div class="layout" v-else>
       <nav class="sidebar">
         <h2>匠心小铺</h2>
-        <a :class="{active: tab==='dashboard'}" @click="tab='dashboard';load()">仪表盘</a>
-        <a :class="{active: tab==='products'}" @click="tab='products';loadProducts()">商品管理</a>
-        <a :class="{active: tab==='orders'}" @click="tab='orders';loadOrders()">订单管理</a>
+        <a :class="{active: tab==='dashboard'}" @click="switchTab('dashboard')">仪表盘</a>
+        <a :class="{active: tab==='products'}" @click="switchTab('products')">商品管理</a>
+        <a :class="{active: tab==='banners'}" @click="switchTab('banners')">Banner 管理</a>
+        <a :class="{active: tab==='orders'}" @click="switchTab('orders')">订单管理</a>
         <a @click="logout" style="margin-top:40px;">退出登录</a>
       </nav>
       <main class="main">
@@ -57,18 +72,119 @@
         </div>
 
         <div v-if="tab==='products'">
-          <h2 style="margin-bottom:24px;">商品列表</h2>
+          <div class="toolbar">
+            <h2>商品管理</h2>
+            <button @click="showProductForm = !showProductForm">{{ showProductForm ? '收起表单' : '+ 新增商品' }}</button>
+          </div>
+
+          <div class="panel" v-if="showProductForm">
+            <h3>新增商品</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label>商品名称</label>
+                <input v-model="newProduct.name" placeholder="如：匠心手作陶瓷杯" />
+              </div>
+              <div class="form-group">
+                <label>分类</label>
+                <select v-model="newProduct.categoryId">
+                  <option v-for="c in categories" :key="c.id" :value="c.id">{{ c.name }}</option>
+                </select>
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>售价（元）</label>
+                <input v-model.number="newProduct.price" type="number" step="0.01" />
+              </div>
+              <div class="form-group">
+                <label>原价（元，选填）</label>
+                <input v-model.number="newProduct.originalPrice" type="number" step="0.01" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>库存</label>
+                <input v-model.number="newProduct.stock" type="number" />
+              </div>
+              <div class="form-group">
+                <label>封面图 URL</label>
+                <input v-model="newProduct.coverImage" placeholder="/uploads/demo/product-1.png" />
+              </div>
+            </div>
+            <p class="hint">图片路径示例：/uploads/demo/product-1.png（需先执行 npm run db:reseed 生成演示图）</p>
+            <div class="form-row full">
+              <div class="form-group">
+                <label>商品描述</label>
+                <textarea v-model="newProduct.description" placeholder="商品详情描述"></textarea>
+              </div>
+            </div>
+            <button @click="createProduct">提交创建</button>
+          </div>
+
           <table>
-            <thead><tr><th>ID</th><th>名称</th><th>价格</th><th>库存</th><th>状态</th><th>操作</th></tr></thead>
+            <thead><tr><th>图</th><th>ID</th><th>名称</th><th>分类</th><th>价格</th><th>库存</th><th>状态</th><th>操作</th></tr></thead>
             <tbody>
               <tr v-for="p in products" :key="p.id">
+                <td><img class="thumb" :src="resolveImg(p.coverImage)" @error="onImgError" /></td>
                 <td>{{ p.id }}</td>
                 <td>{{ p.name }}</td>
+                <td>{{ p.category?.name }}</td>
                 <td>￥{{ p.price }}</td>
                 <td>{{ p.stock }}</td>
-                <td><span class="tag">{{ p.isActive ? '上架' : '下架' }}</span></td>
+                <td><span class="tag" :class="{off: !p.isActive}">{{ p.isActive ? '上架' : '下架' }}</span></td>
                 <td>
                   <button class="btn-sm" @click="toggleProduct(p)">{{ p.isActive ? '下架' : '上架' }}</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div v-if="tab==='banners'">
+          <div class="toolbar">
+            <h2>Banner 管理</h2>
+            <button @click="showBannerForm = !showBannerForm">{{ showBannerForm ? '收起表单' : '+ 新增 Banner' }}</button>
+          </div>
+
+          <div class="panel" v-if="showBannerForm">
+            <h3>新增 Banner</h3>
+            <div class="form-row">
+              <div class="form-group">
+                <label>图片 URL</label>
+                <input v-model="newBanner.imageUrl" placeholder="/uploads/demo/banner-1.png" />
+              </div>
+              <div class="form-group">
+                <label>排序（越小越靠前）</label>
+                <input v-model.number="newBanner.sortOrder" type="number" />
+              </div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label>链接类型</label>
+                <select v-model="newBanner.linkType">
+                  <option value="none">无链接</option>
+                  <option value="product">跳转商品</option>
+                </select>
+              </div>
+              <div class="form-group" v-if="newBanner.linkType === 'product'">
+                <label>商品 ID</label>
+                <input v-model="newBanner.linkValue" placeholder="1" />
+              </div>
+            </div>
+            <button @click="createBanner">提交创建</button>
+          </div>
+
+          <table>
+            <thead><tr><th>预览</th><th>ID</th><th>排序</th><th>链接</th><th>状态</th><th>操作</th></tr></thead>
+            <tbody>
+              <tr v-for="b in banners" :key="b.id">
+                <td><img class="banner-thumb" :src="resolveImg(b.imageUrl)" @error="onImgError" /></td>
+                <td>{{ b.id }}</td>
+                <td>{{ b.sortOrder }}</td>
+                <td>{{ b.linkType === 'product' ? '商品 #' + b.linkValue : '无' }}</td>
+                <td><span class="tag" :class="{off: !b.isActive}">{{ b.isActive ? '启用' : '禁用' }}</span></td>
+                <td>
+                  <button class="btn-sm" @click="toggleBanner(b)">{{ b.isActive ? '禁用' : '启用' }}</button>
                 </td>
               </tr>
             </tbody>
@@ -112,13 +228,48 @@
           tab: 'dashboard',
           stats: { todayOrders: 0, pending: 0, paid: 0 },
           products: [],
+          categories: [],
+          banners: [],
           orders: [],
+          showProductForm: false,
+          showBannerForm: false,
+          newProduct: {
+            name: '',
+            categoryId: 1,
+            price: 0,
+            originalPrice: null,
+            stock: 0,
+            coverImage: '/uploads/demo/product-1.png',
+            description: '',
+          },
+          newBanner: {
+            imageUrl: '/uploads/demo/banner-1.png',
+            linkType: 'none',
+            linkValue: '',
+            sortOrder: 10,
+            isActive: true,
+          },
         };
       },
       mounted() {
         if (this.token) this.load();
       },
       methods: {
+        resolveImg(url) {
+          if (!url) return '';
+          if (/^https?:\/\//i.test(url)) return url;
+          return url.startsWith('/') ? url : '/' + url;
+        },
+        onImgError(e) {
+          e.target.style.background = '#eee';
+        },
+        switchTab(tab) {
+          this.tab = tab;
+          if (tab === 'dashboard') this.load();
+          else if (tab === 'products') this.loadProducts();
+          else if (tab === 'banners') this.loadBanners();
+          else if (tab === 'orders') this.loadOrders();
+        },
         async api(path, options = {}) {
           const res = await fetch(API + path, {
             ...options,
@@ -153,8 +304,18 @@
           this.stats = await this.api('/admin/orders/stats/overview');
         },
         async loadProducts() {
-          const data = await this.api('/admin/products');
-          this.products = data.list;
+          const [productData, categories] = await Promise.all([
+            this.api('/admin/products?pageSize=50'),
+            this.api('/admin/categories'),
+          ]);
+          this.products = productData.list;
+          this.categories = categories;
+          if (categories.length && !this.newProduct.categoryId) {
+            this.newProduct.categoryId = categories[0].id;
+          }
+        },
+        async loadBanners() {
+          this.banners = await this.api('/admin/banners');
         },
         async loadOrders() {
           this.orders = await this.api('/admin/orders');
@@ -162,9 +323,62 @@
         statusText(s) {
           return { pending: '待付款', paid: '待发货', shipped: '待收货', completed: '已完成', cancelled: '已取消' }[s] || s;
         },
+        async createProduct() {
+          if (!this.newProduct.name || !this.newProduct.price) {
+            return alert('请填写商品名称和售价');
+          }
+          try {
+            await this.api('/admin/products', {
+              method: 'POST',
+              body: {
+                ...this.newProduct,
+                images: [this.newProduct.coverImage],
+              },
+            });
+            alert('商品创建成功');
+            this.newProduct = {
+              name: '',
+              categoryId: this.categories[0]?.id || 1,
+              price: 0,
+              originalPrice: null,
+              stock: 0,
+              coverImage: '/uploads/demo/product-1.png',
+              description: '',
+            };
+            this.showProductForm = false;
+            this.loadProducts();
+          } catch (e) {
+            alert(e.message);
+          }
+        },
+        async createBanner() {
+          if (!this.newBanner.imageUrl) return alert('请填写图片 URL');
+          try {
+            await this.api('/admin/banners', {
+              method: 'POST',
+              body: this.newBanner,
+            });
+            alert('Banner 创建成功');
+            this.newBanner = {
+              imageUrl: '/uploads/demo/banner-1.png',
+              linkType: 'none',
+              linkValue: '',
+              sortOrder: 10,
+              isActive: true,
+            };
+            this.showBannerForm = false;
+            this.loadBanners();
+          } catch (e) {
+            alert(e.message);
+          }
+        },
         async toggleProduct(p) {
           await this.api('/admin/products/' + p.id + '/status', { method: 'PATCH', body: { isActive: !p.isActive } });
           this.loadProducts();
+        },
+        async toggleBanner(b) {
+          await this.api('/admin/banners/' + b.id, { method: 'PUT', body: { isActive: !b.isActive } });
+          this.loadBanners();
         },
         async completePickup(o) {
           await this.api('/admin/orders/' + o.id + '/complete-pickup', { method: 'POST' });
