@@ -1,0 +1,47 @@
+<scroll-view class="tabs" scroll-x>
+  <view
+    class="tab {{activeTab === item.key ? 'active' : ''}}"
+    wx:for="{{tabs}}"
+    wx:key="key"
+    data-key="{{item.key}}"
+    bindtap="onTabTap"
+  >
+    {{item.label}}
+  </view>
+</scroll-view>
+
+<view class="order-card" wx:for="{{orders}}" wx:key="id" data-id="{{item.id}}" bindtap="onOrderTap">
+  <view class="order-head">
+    <text>{{item.orderNo}}</text>
+    <text class="status">{{statusMap[item.status]}}</text>
+  </view>
+  <view class="order-items">
+    <image
+      wx:for="{{item.items}}"
+      wx:for-item="product"
+      wx:key="id"
+      class="item-img"
+      src="{{product.coverImage}}"
+      mode="aspectFill"
+    />
+  </view>
+  <view class="order-foot">
+    <text>共{{item.items.length}}件 ￥{{item.payAmount}}</text>
+    <view class="actions" catchtap="">
+      <text
+        wx:if="{{item.status === 'pending'}}"
+        class="action"
+        data-id="{{item.id}}"
+        catchtap="onCancel"
+      >取消</text>
+      <text
+        wx:if="{{item.status === 'pending'}}"
+        class="action primary"
+        data-id="{{item.id}}"
+        catchtap="onPay"
+      >去支付</text>
+    </view>
+  </view>
+</view>
+
+<view class="empty" wx:if="{{!orders.length}}">暂无订单</view>

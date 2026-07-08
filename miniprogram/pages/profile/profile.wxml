@@ -1,0 +1,47 @@
+<view class="profile-page">
+  <view class="header">
+    <image class="avatar" src="{{userInfo.avatar || '/assets/icons/profile.png'}}" />
+    <view class="user-info">
+      <text class="nickname">{{userInfo.nickname || '微信用户'}}</text>
+      <text class="welcome">欢迎来到匠心小铺</text>
+      <text class="phone" wx:if="{{userInfo.phone}}">{{userInfo.phone}}</text>
+    </view>
+  </view>
+
+  <view class="card order-card">
+    <view class="section-head" bindtap="onAllOrders">
+      <text class="section-title">我的订单</text>
+      <text class="more">全部订单 ›</text>
+    </view>
+    <view class="shortcuts">
+      <view
+        class="shortcut"
+        wx:for="{{orderShortcuts}}"
+        wx:key="status"
+        data-status="{{item.status}}"
+        bindtap="onOrderTap"
+      >
+        <view class="shortcut-icon">{{item.icon}}</view>
+        <text class="shortcut-label">{{item.label}}</text>
+      </view>
+    </view>
+  </view>
+
+  <view class="card menu">
+    <view class="menu-item" bindtap="onAddress">
+      <text class="menu-icon">📍</text>
+      <text class="menu-text">收货地址</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="onContact">
+      <text class="menu-icon">💬</text>
+      <text class="menu-text">联系客服</text>
+      <text class="menu-arrow">›</text>
+    </view>
+    <view class="menu-item" bindtap="onPrivacy">
+      <text class="menu-icon">📄</text>
+      <text class="menu-text">隐私协议</text>
+      <text class="menu-arrow">›</text>
+    </view>
+  </view>
+</view>

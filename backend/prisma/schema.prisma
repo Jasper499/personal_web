@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  openid    String   @unique
+  nickname  String   @default("微信用户")
+  phone     String?
+  avatar    String   @default("")
+  createdAt DateTime @default(now()) @map("created_at")
+  cartItems CartItem[]
+  addresses Address[]
+  orders    Order[]
+
+  @@map("users")
+}
+
+model Admin {
+  id           Int    @id @default(autoincrement())
+  username     String @unique
+  passwordHash String @map("password_hash")
+  name         String @default("管理员")
+
+  @@map("admins")
+}
+
+model Category {
+  id        Int       @id @default(autoincrement())
+  name      String
+  icon      String    @default("")
+  sortOrder Int       @default(0) @map("sort_order")
+  isActive  Boolean   @default(true) @map("is_active")
+  products  Product[]
+
+  @@map("categories")
+}
+
+model Product {
+  id            Int          @id @default(autoincrement())
+  categoryId    Int          @map("category_id")
+  name          String
+  description   String       @default("")
+  price         Float
+  originalPrice Float?       @map("original_price")
+  stock         Int          @default(0)
+  coverImage    String       @default("") @map("cover_image")
+  images        String       @default("[]")
+  salesCount    Int          @default(0) @map("sales_count")
+  isActive      Boolean      @default(true) @map("is_active")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  category      Category     @relation(fields: [categoryId], references: [id])
+  skus          ProductSku[]
+  cartItems     CartItem[]
+  orderItems    OrderItem[]
+
+  @@map("products")
+}
+
+model ProductSku {
+  id         Int         @id @default(autoincrement())
+  productId  Int         @map("product_id")
+  specName   String      @map("spec_name")
+  price      Float
+  stock      Int         @default(0)
+  product    Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  cartItems  CartItem[]
+  orderItems OrderItem[]
+
+  @@map("product_skus")
+}
+
+model CartItem {
+  id        Int         @id @default(autoincrement())
+  userId    Int         @map("user_id")
+  productId Int         @map("product_id")
+  skuId     Int?        @map("sku_id")
+  quantity  Int         @default(1)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  product   Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
+  sku       ProductSku? @relation(fields: [skuId], references: [id])
+
+  @@unique([userId, productId, skuId])
+  @@map("cart_items")
+}
+
+model Address {
+  id        Int     @id @default(autoincrement())
+  userId    Int     @map("user_id")
+  name      String
+  phone     String
+  province  String
+  city      String
+  district  String
+  detail    String
+  isDefault Boolean @default(false) @map("is_default")
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("addresses")
+}
+
+model Order {
+  id              Int         @id @default(autoincrement())
+  orderNo         String      @unique @map("order_no")
+  userId          Int         @map("user_id")
+  status          String      @default("pending")
+  totalAmount     Float       @map("total_amount")
+  freight         Float       @default(0)
+  payAmount       Float       @map("pay_amount")
+  deliveryType    String      @map("delivery_type")
+  addressSnapshot String?     @map("address_snapshot")
+  remark          String      @default("")
+  pickupCode      String?     @map("pickup_code")
+  expressCompany  String?     @map("express_company")
+  expressNo       String?     @map("express_no")
+  prepayId        String?     @map("prepay_id")
+  transactionId   String?     @map("transaction_id")
+  createdAt       DateTime    @default(now()) @map("created_at")
+  paidAt          DateTime?   @map("paid_at")
+  shippedAt       DateTime?   @map("shipped_at")
+  completedAt     DateTime?   @map("completed_at")
+  user            User        @relation(fields: [userId], references: [id])
+  items           OrderItem[]
+
+  @@map("orders")
+}
+
+model OrderItem {
+  id          Int         @id @default(autoincrement())
+  orderId     Int         @map("order_id")
+  productId   Int         @map("product_id")
+  skuId       Int?        @map("sku_id")
+  productName String      @map("product_name")
+  specName    String      @default("") @map("spec_name")
+  price       Float
+  quantity    Int
+  coverImage  String      @default("") @map("cover_image")
+  order       Order       @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  product     Product     @relation(fields: [productId], references: [id])
+  sku         ProductSku? @relation(fields: [skuId], references: [id])
+
+  @@map("order_items")
+}
+
+model Banner {
+  id        Int     @id @default(autoincrement())
+  imageUrl  String  @map("image_url")
+  linkType  String  @default("none") @map("link_type")
+  linkValue String  @default("") @map("link_value")
+  sortOrder Int     @default(0) @map("sort_order")
+  isActive  Boolean @default(true) @map("is_active")
+
+  @@map("banners")
+}
+
+model AnalyticsEvent {
+  id        Int      @id @default(autoincrement())
+  event     String
+  params    String   @default("{}")
+  userId    Int?     @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("analytics_events")
+}

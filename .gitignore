@@ -1,0 +1,15 @@
+node_modules/
+.env
+*.db
+*.db-journal
+backend/uploads/*
+!backend/uploads/.gitkeep
+.DS_Store
+dist/
+.api-server.pid
+.api-server.log
+.cursor/preview-url.txt
+.cursor/tunnel.log
+miniprogram/project.private.config.json
+miniprogram/config/env.js
+miniprogram/config/.api-cache-cleared

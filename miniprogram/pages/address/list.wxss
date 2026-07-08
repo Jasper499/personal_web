@@ -1,0 +1,75 @@
+.empty {
+  text-align: center;
+  padding: 120rpx 48rpx;
+  color: #ADB5BD;
+}
+
+.empty-icon {
+  font-size: 80rpx;
+  display: block;
+  margin-bottom: 16rpx;
+}
+
+.empty-title {
+  display: block;
+  font-size: 30rpx;
+  color: #2D3436;
+  margin-bottom: 8rpx;
+}
+
+.empty-desc {
+  font-size: 26rpx;
+}
+
+.addr-card {
+  background: #fff;
+  margin: 24rpx;
+  padding: 24rpx;
+  border-radius: 16rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.head {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.name {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #2D3436;
+}
+
+.default {
+  margin-left: 12rpx;
+  background: #FFF0EE;
+  color: #E85D4C;
+  font-size: 22rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 8rpx;
+}
+
+.detail {
+  font-size: 26rpx;
+  color: #6C757D;
+  line-height: 1.6;
+}
+
+.actions {
+  display: flex;
+  gap: 32rpx;
+  margin-top: 20rpx;
+  padding-top: 16rpx;
+  border-top: 1rpx solid #E9ECEF;
+  font-size: 26rpx;
+  color: #6C757D;
+}
+
+.actions .danger {
+  color: #D63031;
+}
+
+.add-btn {
+  margin: 0 24rpx 48rpx;
+}

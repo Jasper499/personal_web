@@ -1,0 +1,75 @@
+<view class="store-header">
+  <view class="store-brand">
+    <text class="store-name">匠心小铺</text>
+    <text class="store-slogan">好物精选 · 温暖生活</text>
+  </view>
+</view>
+
+<view class="search-bar" bindtap="onSearchTap">
+  <text class="search-icon">🔍</text>
+  <text class="search-placeholder">搜索商品</text>
+</view>
+
+<view wx:if="{{loading}}" class="state-panel">
+  <view class="skeleton-banner"></view>
+  <view class="skeleton-grid">
+    <view class="skeleton-card" wx:for="{{[1,2,3,4]}}" wx:key="*this"></view>
+  </view>
+</view>
+
+<view wx:elif="{{loadError}}" class="state-panel error">
+  <text class="state-text">{{loadError}}</text>
+  <button class="retry-btn" size="mini" bindtap="onRetry">重试</button>
+</view>
+
+<block wx:else>
+  <swiper class="banner" indicator-dots indicator-color="rgba(255,255,255,0.5)" indicator-active-color="#fff" autoplay circular wx:if="{{banners.length}}">
+    <swiper-item wx:for="{{banners}}" wx:key="id">
+      <image class="banner-img" src="{{item.imageUrl}}" mode="aspectFill" />
+    </swiper-item>
+  </swiper>
+
+  <view class="category-grid card" wx:if="{{categories.length}}">
+    <view
+      class="category-item"
+      wx:for="{{categories}}"
+      wx:key="id"
+      data-id="{{item.id}}"
+      bindtap="onCategoryTap"
+    >
+      <view class="category-icon-wrap">
+        <text class="category-icon">{{item.icon || '📦'}}</text>
+      </view>
+      <text class="category-name">{{item.name}}</text>
+    </view>
+  </view>
+
+  <view class="section" wx:if="{{products.length}}">
+    <view class="section-head">
+      <text class="section-title">热销推荐</text>
+      <text class="section-sub">人气好物</text>
+    </view>
+    <view class="product-grid">
+      <view
+        class="product-card"
+        wx:for="{{products}}"
+        wx:key="id"
+        data-id="{{item.id}}"
+        bindtap="onProductTap"
+      >
+        <view class="product-img-wrap">
+          <image class="product-img" src="{{item.coverImage}}" mode="aspectFill" />
+          <text class="promo-tag" wx:if="{{item.originalPrice}}">特惠</text>
+        </view>
+        <view class="product-info">
+          <text class="product-name">{{item.name}}</text>
+          <view class="price-row">
+            <text class="price">￥{{item.price}}</text>
+            <text class="price-original" wx:if="{{item.originalPrice}}">￥{{item.originalPrice}}</text>
+          </view>
+          <text class="sales">已售 {{item.salesCount}}</text>
+        </view>
+      </view>
+    </view>
+  </view>
+</block>

@@ -1,0 +1,22 @@
+<view wx:if="{{loading}}" class="empty">加载中...</view>
+
+<view wx:elif="{{addresses.length === 0}}" class="empty">
+  <text class="empty-icon">📍</text>
+  <text class="empty-title">暂无收货地址</text>
+  <text class="empty-desc">添加地址后可使用快递配送</text>
+</view>
+
+<view class="addr-card" wx:for="{{addresses}}" wx:key="id" data-id="{{item.id}}" bindtap="onSelect">
+  <view class="head">
+    <text class="name">{{item.name}} {{item.phone}}</text>
+    <text class="default" wx:if="{{item.isDefault}}">默认</text>
+  </view>
+  <text class="detail">{{item.province}}{{item.city}}{{item.district}}{{item.detail}}</text>
+  <view class="actions" catchtap="">
+    <text wx:if="{{!item.isDefault}}" data-id="{{item.id}}" catchtap="onSetDefault">设为默认</text>
+    <text data-id="{{item.id}}" catchtap="onEdit">编辑</text>
+    <text class="danger" data-id="{{item.id}}" catchtap="onDelete">删除</text>
+  </view>
+</view>
+
+<view class="btn-primary add-btn" bindtap="onAdd">+ 新增收货地址</view>

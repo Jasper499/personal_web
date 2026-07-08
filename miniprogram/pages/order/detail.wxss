@@ -1,0 +1,147 @@
+.page {
+  padding-bottom: 160rpx;
+}
+
+.pay-banner {
+  background: #fff5f5;
+  border: 1rpx solid #f5c2c7;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin: 24rpx;
+}
+
+.pay-banner-title {
+  display: block;
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #E85D4C;
+}
+
+.pay-banner-tip {
+  display: block;
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  color: #6C757D;
+}
+
+.pay-banner-btn {
+  margin-top: 20rpx;
+  background: #E85D4C;
+  color: #fff;
+  text-align: center;
+  padding: 20rpx 0;
+  border-radius: 44rpx;
+  font-size: 28rpx;
+}
+
+.status-card {
+  text-align: center;
+}
+
+.status {
+  font-size: 36rpx;
+  font-weight: 600;
+  color: #E85D4C;
+  display: block;
+}
+
+.pickup-code {
+  font-size: 48rpx;
+  font-weight: 600;
+  margin-top: 16rpx;
+  display: block;
+}
+
+.express-info {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 26rpx;
+  color: #6C757D;
+}
+
+.addr {
+  display: block;
+  color: #6C757D;
+  margin-top: 8rpx;
+}
+
+.item {
+  display: flex;
+  padding: 16rpx 0;
+  border-bottom: 1rpx solid #E9ECEF;
+}
+
+.thumb {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 8rpx;
+}
+
+.info {
+  flex: 1;
+  margin-left: 16rpx;
+}
+
+.spec {
+  font-size: 24rpx;
+  color: #ADB5BD;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 8rpx 0;
+}
+
+.total {
+  font-weight: 600;
+  border-top: 1rpx solid #E9ECEF;
+  margin-top: 8rpx;
+  padding-top: 16rpx;
+}
+
+.footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  gap: 24rpx;
+  padding: 24rpx;
+  background: #fff;
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.btn-secondary,
+.btn-primary {
+  flex: 1;
+  text-align: center;
+  padding: 24rpx 0;
+  border-radius: 44rpx;
+  font-size: 30rpx;
+}
+
+.btn-secondary {
+  background: #F8F9FA;
+  color: #6C757D;
+}
+
+.btn-primary {
+  background: #E85D4C;
+  color: #fff;
+}
+
+.btn-primary.full {
+  flex: 1;
+}
+
+.loading {
+  padding: 120rpx 24rpx;
+  text-align: center;
+  color: #6C757D;
+}
+
+.retry-btn {
+  margin: 32rpx auto 0;
+  width: 240rpx;
+}

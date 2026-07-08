@@ -1,0 +1,25 @@
+<view class="content">
+  <view class="title">匠心小铺用户隐私保护指引</view>
+  <text class="para">
+    欢迎使用匠心小铺小程序。我们重视您的隐私保护。在使用本服务前，请您仔细阅读本指引。
+  </text>
+  <text class="para">
+    1. 我们收集的信息：微信 openid、昵称、头像（用于账号识别）；手机号码（用于订单联系，需您授权）；收货地址（用于快递配送）。
+  </text>
+  <text class="para">
+    2. 信息使用：用于完成交易、订单配送、客户服务及改进产品体验。
+  </text>
+  <text class="para">
+    3. 信息存储：数据存储于中华人民共和国境内服务器，采取合理安全措施保护。
+  </text>
+  <text class="para">
+    4. 您的权利：您可查询、更正或删除个人信息，可通过客服联系我们。
+  </text>
+  <text class="para">
+    5. 联系我们：shop-service@example.com
+  </text>
+</view>
+<view class="actions">
+  <view class="btn secondary" bindtap="onDisagree">不同意</view>
+  <view class="btn primary" bindtap="onAgree">同意并继续</view>
+</view>

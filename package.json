@@ -1,0 +1,24 @@
+{
+  "name": "shop-miniprogram",
+  "version": "1.0.0",
+  "private": true,
+  "description": "匠心小铺商铺小程序",
+  "scripts": {
+    "dev": "node scripts/ensure-api.js",
+    "dev:foreground": "node scripts/ensure-api.js --foreground",
+    "stop": "node scripts/stop-api.js",
+    "setup": "node scripts/ensure-api.js --setup-only",
+    "verify": "node scripts/verify-agent-env.js",
+    "verify:deps": "node scripts/verify-agent-env.js --deps-only",
+    "preview:tunnel": "node scripts/start-tunnel.js",
+    "miniprogram:setup": "node scripts/setup-miniprogram.js",
+    "miniprogram:doctor": "node scripts/diagnose-miniprogram.js",
+    "miniprogram:verify": "node scripts/verify-miniprogram-source.js",
+    "miniprogram:open": "node scripts/open-wechat-devtools.js",
+    "fix:miniprogram": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/fix-miniprogram-windows.ps1",
+    "db:reseed": "node scripts/generate-demo-assets.js && node scripts/generate-icons.js && cd backend && npm run db:seed",
+    "setup:local": "node scripts/setup-local.js",
+    "setup:local:zip": "node scripts/setup-local.js --use-zip",
+    "test": "cd backend && npm test"
+  }
+}

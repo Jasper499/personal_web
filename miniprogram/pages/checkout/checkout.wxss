@@ -1,0 +1,97 @@
+.delivery-opt {
+  display: block;
+  padding: 16rpx 0;
+}
+
+.address .addr-detail {
+  display: block;
+  color: #6C757D;
+  margin-top: 8rpx;
+}
+
+.placeholder {
+  color: #ADB5BD;
+}
+
+.pickup .label {
+  font-weight: 600;
+  display: block;
+}
+
+.pickup .tip {
+  font-size: 24rpx;
+  color: #ADB5BD;
+  display: block;
+  margin-top: 8rpx;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  padding: 12rpx 0;
+}
+
+.remark input {
+  text-align: right;
+  flex: 1;
+  margin-left: 24rpx;
+}
+
+.dev-tip {
+  margin: 0 24rpx 180rpx;
+  padding: 20rpx 24rpx;
+  background: #fff8f7;
+  border: 1rpx solid #f5c2c7;
+  border-radius: 12rpx;
+  font-size: 24rpx;
+  color: #6C757D;
+  line-height: 1.6;
+}
+
+.footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 16rpx 24rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  background: #fff;
+  box-shadow: 0 -4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.footer-left {
+  margin-bottom: 16rpx;
+}
+
+.footer-label {
+  font-size: 24rpx;
+  color: #6C757D;
+  margin-right: 8rpx;
+}
+
+.footer-actions {
+  display: flex;
+  gap: 16rpx;
+}
+
+.btn-outline,
+.pay-btn {
+  flex: 1;
+  height: 80rpx;
+  line-height: 80rpx;
+  text-align: center;
+  border-radius: 44rpx;
+  font-size: 28rpx;
+}
+
+.btn-outline {
+  background: #fff;
+  color: #6C757D;
+  border: 1rpx solid #dee2e6;
+}
+
+.pay-btn {
+  background: #E85D4C;
+  color: #fff;
+  font-weight: 600;
+}

@@ -1,0 +1,61 @@
+page {
+  --primary: #E85D4C;
+  --gray-100: #F8F9FA;
+  --gray-200: #E9ECEF;
+  --gray-400: #ADB5BD;
+  --gray-900: #212529;
+  background: var(--gray-100);
+  color: var(--gray-900);
+  font-size: 28rpx;
+}
+
+.container {
+  padding: 24rpx;
+}
+
+.card {
+  background: #fff;
+  border-radius: 16rpx;
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+  box-shadow: 0 4rpx 16rpx rgba(0, 0, 0, 0.06);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: #fff;
+  border-radius: 44rpx;
+  height: 88rpx;
+  line-height: 88rpx;
+  text-align: center;
+  font-size: 30rpx;
+}
+
+.btn-primary.disabled {
+  opacity: 0.5;
+}
+
+.price {
+  color: var(--primary);
+  font-weight: 600;
+  font-size: 36rpx;
+}
+
+.price-original {
+  color: var(--gray-400);
+  text-decoration: line-through;
+  font-size: 24rpx;
+  margin-left: 8rpx;
+}
+
+.empty {
+  text-align: center;
+  padding: 120rpx 0;
+  color: var(--gray-400);
+}
+
+.empty-btn {
+  margin-top: 32rpx;
+  display: inline-block;
+  padding: 0 48rpx;
+}

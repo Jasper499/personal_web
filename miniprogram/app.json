@@ -1,0 +1,55 @@
+{
+  "pages": [
+    "pages/index/index",
+    "pages/category/category",
+    "pages/cart/cart",
+    "pages/profile/profile",
+    "pages/product/detail",
+    "pages/checkout/checkout",
+    "pages/order/list",
+    "pages/order/detail",
+    "pages/address/list",
+    "pages/address/edit",
+    "pages/search/search",
+    "pages/legal/privacy"
+  ],
+  "window": {
+    "navigationBarBackgroundColor": "#E85D4C",
+    "navigationBarTitleText": "匠心小铺",
+    "navigationBarTextStyle": "white",
+    "backgroundColor": "#F8F9FA"
+  },
+  "tabBar": {
+    "color": "#999999",
+    "selectedColor": "#E85D4C",
+    "backgroundColor": "#ffffff",
+    "list": [
+      {
+        "pagePath": "pages/index/index",
+        "text": "首页",
+        "iconPath": "assets/icons/home.png",
+        "selectedIconPath": "assets/icons/home-active.png"
+      },
+      {
+        "pagePath": "pages/category/category",
+        "text": "分类",
+        "iconPath": "assets/icons/category.png",
+        "selectedIconPath": "assets/icons/category-active.png"
+      },
+      {
+        "pagePath": "pages/cart/cart",
+        "text": "购物车",
+        "iconPath": "assets/icons/cart.png",
+        "selectedIconPath": "assets/icons/cart-active.png"
+      },
+      {
+        "pagePath": "pages/profile/profile",
+        "text": "我的",
+        "iconPath": "assets/icons/profile.png",
+        "selectedIconPath": "assets/icons/profile-active.png"
+      }
+    ]
+  },
+  "style": "v2",
+  "sitemapLocation": "sitemap.json"
+}

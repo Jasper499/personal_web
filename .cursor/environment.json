@@ -1,0 +1,28 @@
+{
+  "name": "匠心小铺开发环境",
+  "install": "npm run setup && npm run verify:deps",
+  "env": {
+    "HOST": "0.0.0.0",
+    "PORT": "3000",
+    "MOCK_WX_LOGIN": "true",
+    "NODE_ENV": "development"
+  },
+  "ports": [
+    {
+      "name": "shop-api",
+      "port": 3000
+    }
+  ],
+  "terminals": [
+    {
+      "name": "shop-api",
+      "command": "HOST=0.0.0.0 PORT=3000 npm run dev:foreground",
+      "description": "匠心小铺 API 服务（端口 3000）"
+    },
+    {
+      "name": "preview-tunnel",
+      "command": "npm run preview:tunnel",
+      "description": "Cloudflare 公网预览隧道。打开 .cursor/preview-url.txt 中的链接"
+    }
+  ]
+}

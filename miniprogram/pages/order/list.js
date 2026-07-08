@@ -1,0 +1,91 @@
+const { request } = require('../../utils/request');
+const { payOrder, getPayConfig } = require('../../utils/pay');
+
+const TABS = [
+  { key: '', label: '全部' },
+  { key: 'pending', label: '待付款' },
+  { key: 'paid', label: '待发货' },
+  { key: 'shipped', label: '待收货' },
+  { key: 'completed', label: '已完成' },
+];
+
+const STATUS_MAP = {
+  pending: '待付款',
+  paid: '待发货',
+  shipped: '待收货',
+  completed: '已完成',
+  cancelled: '已取消',
+};
+
+Page({
+  data: {
+    tabs: TABS,
+    activeTab: '',
+    orders: [],
+    statusMap: STATUS_MAP,
+    payLabel: '模拟支付',
+  },
+
+  onLoad(options) {
+    if (options.status) {
+      this.setData({ activeTab: options.status });
+    }
+    this.loadPayConfig();
+  },
+
+  onShow() {
+    this.loadOrders();
+  },
+
+  async loadPayConfig() {
+    try {
+      const config = await getPayConfig();
+      this.setData({
+        payLabel: config.mockPay === false ? '微信支付' : '模拟支付',
+      });
+    } catch {
+      this.setData({ payLabel: '模拟支付' });
+    }
+  },
+
+  async loadOrders() {
+    const path = this.data.activeTab
+      ? `/orders?status=${this.data.activeTab}`
+      : '/orders';
+    const orders = await request(path);
+    this.setData({ orders });
+  },
+
+  onTabTap(e) {
+    this.setData({ activeTab: e.currentTarget.dataset.key });
+    this.loadOrders();
+  },
+
+  onOrderTap(e) {
+    wx.navigateTo({ url: `/pages/order/detail?id=${e.currentTarget.dataset.id}` });
+  },
+
+  async onPay(e) {
+    const id = e.currentTarget.dataset.id;
+    try {
+      wx.showLoading({ title: '支付中' });
+      await payOrder(id);
+      wx.hideLoading();
+      wx.showToast({ title: '支付成功', icon: 'success' });
+      this.loadOrders();
+    } catch (err) {
+      wx.hideLoading();
+      wx.showModal({
+        title: '支付失败',
+        content: (err && err.message) || '请重新编译小程序后重试',
+        showCancel: false,
+      });
+    }
+  },
+
+  async onCancel(e) {
+    const id = e.currentTarget.dataset.id;
+    await request(`/orders/${id}/cancel`, { method: 'POST' });
+    this.loadOrders();
+  },
+});

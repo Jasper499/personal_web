@@ -1,0 +1,48 @@
+<view class="cart-page" wx:if="{{list.length}}">
+  <view class="select-all card">
+    <view class="check-wrap" bindtap="onToggleAll">
+      <view class="checkbox {{allSelected ? 'checked' : ''}}"></view>
+      <text>全选</text>
+    </view>
+  </view>
+
+  <view class="cart-item card" wx:for="{{list}}" wx:key="id">
+    <view
+      class="check-wrap"
+      data-id="{{item.id}}"
+      bindtap="onToggleItem"
+    >
+      <view class="checkbox {{selectedIds.includes(item.id) ? 'checked' : ''}} {{!item.available ? 'disabled' : ''}}"></view>
+    </view>
+    <image class="thumb" src="{{item.product.coverImage}}" mode="aspectFill" />
+    <view class="info">
+      <text class="name">{{item.product.name}}</text>
+      <text class="spec" wx:if="{{item.specName}}">{{item.specName}}</text>
+      <view class="row">
+        <text class="price">￥{{item.price}}</text>
+        <view class="qty" wx:if="{{item.available}}">
+          <text class="qty-btn" data-id="{{item.id}}" data-type="minus" bindtap="onQtyChange">−</text>
+          <text class="qty-num">{{item.quantity}}</text>
+          <text class="qty-btn" data-id="{{item.id}}" data-type="plus" bindtap="onQtyChange">+</text>
+        </view>
+        <text wx:else class="invalid">已失效</text>
+      </view>
+    </view>
+    <text class="delete" data-id="{{item.id}}" bindtap="onDelete">删除</text>
+  </view>
+
+  <view class="footer">
+    <view class="footer-total">
+      <text class="total-label">合计</text>
+      <text class="price">￥{{totalAmount}}</text>
+    </view>
+    <view class="btn-primary checkout-btn" bindtap="onCheckout">去结算</view>
+  </view>
+</view>
+
+<view class="empty" wx:else>
+  <text class="empty-icon">🛒</text>
+  <text class="empty-title">购物车是空的</text>
+  <text class="empty-desc">去首页挑选心仪好物吧</text>
+  <view class="btn-primary empty-btn" bindtap="onGoHome">去逛逛</view>
+</view>
